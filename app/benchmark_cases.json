@@ -1,0 +1,339 @@
+[
+  {
+    "id": "sequential",
+    "title": "Complete sequential procedure",
+    "source": "The clerk performs Receive request as the starting step. The clerk then performs Archive request, which ends the process.",
+    "states": [
+      "Receive request",
+      "Archive request"
+    ],
+    "transitions": [
+      [
+        "Receive request",
+        "Archive request"
+      ]
+    ],
+    "actors": [
+      "clerk"
+    ],
+    "defects": [],
+    "state_evidence": [
+      [
+        "Receive request",
+        "S1"
+      ],
+      [
+        "Archive request",
+        "S2"
+      ]
+    ],
+    "split": "seed"
+  },
+  {
+    "id": "missing_rejection",
+    "title": "Approval without a rejection route",
+    "source": "The manager performs Review request as the starting step. If approved, the clerk performs Archive request, which ends the process. No next step is defined when the request is rejected.",
+    "states": [
+      "Review request",
+      "Archive request"
+    ],
+    "transitions": [
+      [
+        "Review request",
+        "Archive request"
+      ]
+    ],
+    "actors": [
+      "manager",
+      "clerk"
+    ],
+    "defects": [
+      "missing_branch"
+    ],
+    "state_evidence": [
+      [
+        "Review request",
+        "S1"
+      ],
+      [
+        "Archive request",
+        "S2"
+      ]
+    ],
+    "split": "seed"
+  },
+  {
+    "id": "dead_end",
+    "title": "Procedure stops before completion",
+    "source": "The clerk performs Receive request as the starting step. The clerk then performs Check request. Check request is not an end state, has no next step, and no completed outcome is defined.",
+    "states": [
+      "Receive request",
+      "Check request"
+    ],
+    "transitions": [
+      [
+        "Receive request",
+        "Check request"
+      ]
+    ],
+    "actors": [
+      "clerk"
+    ],
+    "defects": [
+      "dead_end",
+      "invariant_violation"
+    ],
+    "state_evidence": [
+      [
+        "Receive request",
+        "S1"
+      ],
+      [
+        "Check request",
+        "S2"
+      ]
+    ],
+    "split": "seed"
+  },
+  {
+    "id": "complete_branch",
+    "title": "Approval and rejection both terminate",
+    "source": "The manager performs Review claim as the starting step. If approved, the clerk performs Pay claim, which ends the process. Otherwise, the clerk performs Reject claim, which ends the process.",
+    "states": [
+      "Review claim",
+      "Pay claim",
+      "Reject claim"
+    ],
+    "transitions": [
+      [
+        "Review claim",
+        "Pay claim"
+      ],
+      [
+        "Review claim",
+        "Reject claim"
+      ]
+    ],
+    "actors": [
+      "manager",
+      "clerk"
+    ],
+    "defects": [],
+    "state_evidence": [
+      [
+        "Review claim",
+        "S1"
+      ],
+      [
+        "Pay claim",
+        "S2"
+      ],
+      [
+        "Reject claim",
+        "S3"
+      ]
+    ],
+    "split": "additional_frozen"
+  },
+  {
+    "id": "missing_owner",
+    "title": "Action has no named responsible person",
+    "source": "Receive parcel is the starting step, and no responsible actor is specified. Next, the clerk performs Store parcel, which ends the process.",
+    "states": [
+      "Receive parcel",
+      "Store parcel"
+    ],
+    "transitions": [
+      [
+        "Receive parcel",
+        "Store parcel"
+      ]
+    ],
+    "actors": [
+      "clerk"
+    ],
+    "defects": [
+      "unstated_actor"
+    ],
+    "state_evidence": [
+      [
+        "Receive parcel",
+        "S1"
+      ],
+      [
+        "Store parcel",
+        "S2"
+      ]
+    ],
+    "split": "additional_frozen"
+  },
+  {
+    "id": "orphan_step",
+    "title": "Disconnected activity has no entry route",
+    "source": "The clerk performs Open ticket as the starting step. The clerk then performs Close ticket, which ends the process. The auditor performs Audit ticket as a separate terminal step; no transition leads to Audit ticket from Open ticket or Close ticket.",
+    "states": [
+      "Open ticket",
+      "Close ticket",
+      "Audit ticket"
+    ],
+    "transitions": [
+      [
+        "Open ticket",
+        "Close ticket"
+      ]
+    ],
+    "actors": [
+      "clerk",
+      "auditor"
+    ],
+    "defects": [
+      "unreachable_state"
+    ],
+    "state_evidence": [
+      [
+        "Open ticket",
+        "S1"
+      ],
+      [
+        "Close ticket",
+        "S2"
+      ],
+      [
+        "Audit ticket",
+        "S3"
+      ]
+    ],
+    "split": "additional_frozen"
+  },
+  {
+    "id": "mandatory_review",
+    "title": "Urgent route bypasses mandatory review",
+    "source": "The clerk performs Receive order as the starting step. For routine orders, the manager performs Review order, then the clerk performs Dispatch order, which ends the process. For urgent orders, the clerk goes directly from Receive order to Dispatch order. Every dispatch must pass through Review order before Dispatch order, including urgent orders.",
+    "states": [
+      "Receive order",
+      "Review order",
+      "Dispatch order"
+    ],
+    "transitions": [
+      [
+        "Receive order",
+        "Review order"
+      ],
+      [
+        "Review order",
+        "Dispatch order"
+      ],
+      [
+        "Receive order",
+        "Dispatch order"
+      ]
+    ],
+    "actors": [
+      "clerk",
+      "manager"
+    ],
+    "defects": [
+      "bypass"
+    ],
+    "state_evidence": [
+      [
+        "Receive order",
+        "S1"
+      ],
+      [
+        "Review order",
+        "S2"
+      ],
+      [
+        "Dispatch order",
+        "S2"
+      ]
+    ],
+    "split": "additional_frozen"
+  },
+  {
+    "id": "trapped_retry",
+    "title": "Retry cycle has no route to completion",
+    "source": "The clerk performs Receive file as the starting step. The clerk then performs Check file. From Check file, the clerk always performs Retry check, then returns to Check file. Neither Check file nor Retry check is a terminal step, and no completion step exists.",
+    "states": [
+      "Receive file",
+      "Check file",
+      "Retry check"
+    ],
+    "transitions": [
+      [
+        "Receive file",
+        "Check file"
+      ],
+      [
+        "Check file",
+        "Retry check"
+      ],
+      [
+        "Retry check",
+        "Check file"
+      ]
+    ],
+    "actors": [
+      "clerk"
+    ],
+    "defects": [
+      "dead_end",
+      "invariant_violation"
+    ],
+    "state_evidence": [
+      [
+        "Receive file",
+        "S1"
+      ],
+      [
+        "Check file",
+        "S2"
+      ],
+      [
+        "Retry check",
+        "S3"
+      ]
+    ],
+    "split": "additional_frozen"
+  },
+  {
+    "id": "failure_path",
+    "title": "Explicit failure route is preserved",
+    "source": "The technician performs Test device as the starting step. If the test succeeds, the technician performs Release device, which ends the process. If the test fails, the technician performs Quarantine device, which ends the process.",
+    "states": [
+      "Test device",
+      "Release device",
+      "Quarantine device"
+    ],
+    "transitions": [
+      [
+        "Test device",
+        "Release device"
+      ],
+      [
+        "Test device",
+        "Quarantine device"
+      ]
+    ],
+    "actors": [
+      "technician"
+    ],
+    "defects": [],
+    "state_evidence": [
+      [
+        "Test device",
+        "S1"
+      ],
+      [
+        "Release device",
+        "S2"
+      ],
+      [
+        "Quarantine device",
+        "S3"
+      ]
+    ],
+    "split": "additional_frozen"
+  }
+]

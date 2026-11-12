@@ -6,6 +6,7 @@ import os
 import httpx
 import streamlit as st
 
+from app.benchmark import summarize
 from ui.api_errors import request_error
 
 
@@ -17,7 +18,7 @@ def evaluation_page():
         response = httpx.get(base + "/evaluation/cases", timeout=15)
         response.raise_for_status()
         cases = {c["id"]: c["title"] for c in response.json()}
-        selected = st.multiselect("Test cases", list(cases), default=list(cases), format_func=lambda v: cases[v])
+        selected = st.multiselect("Test cases", list(cases), default=list(cases)[:3], format_func=lambda v: cases[v])
         st.caption(f"This comparison normally uses {len(selected) * 3} AI calls and your connected plan allowance. An invalid review may require one extra correction call per case.")
         if st.button("Run comparison", disabled=not selected):
             reports = []
@@ -27,6 +28,7 @@ def evaluation_page():
                     response.raise_for_status()
                     reports.append(response.json())
             st.session_state["benchmark_report"] = {**reports[0], "cases": [c for r in reports for c in r["cases"]]}
+            st.session_state["benchmark_report"]["summary"] = summarize(st.session_state["benchmark_report"]["cases"])
         report = st.session_state.get("benchmark_report")
         if report:
             st.write(report["methodology"])

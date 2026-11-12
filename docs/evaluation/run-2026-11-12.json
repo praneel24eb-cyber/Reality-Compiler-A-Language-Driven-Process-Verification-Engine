@@ -1,0 +1,1925 @@
+{
+  "cases": [
+    {
+      "case": "sequential",
+      "title": "Complete sequential procedure",
+      "split": "seed",
+      "source_sha256": "f3849db51842b0db46b5dfe5be478219c7c139cd7e4c66939eae5bc97e0d9b5f",
+      "plain_llm": {
+        "status": "ok",
+        "metrics": {
+          "states": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "transitions": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "actors": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "state_evidence": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "defect_types": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "latency_seconds": 9.663879700005054,
+        "process": {
+          "process_id": "request_archiving",
+          "actors": [
+            "clerk"
+          ],
+          "states": [
+            {
+              "id": "receive_request",
+              "name": "Receive request",
+              "kind": "start",
+              "actor": "clerk",
+              "evidence": [
+                "S1"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "archive_request",
+              "name": "Archive request",
+              "kind": "terminal",
+              "actor": "clerk",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ],
+          "transitions": [
+            {
+              "id": "receive_to_archive",
+              "source": "receive_request",
+              "target": "archive_request",
+              "label": "then performs Archive request",
+              "condition": null,
+              "actor": "clerk",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ]
+        },
+        "defects": [],
+        "logical_model_calls": 1
+      },
+      "multipass_verified": {
+        "status": "ok",
+        "metrics": {
+          "states": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "transitions": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "actors": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "state_evidence": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "defect_types": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "latency_seconds": 12.406119399995077,
+        "process": {
+          "process_id": "request_archival",
+          "actors": [
+            "clerk"
+          ],
+          "states": [
+            {
+              "id": "receive_request",
+              "name": "Receive request",
+              "kind": "start",
+              "actor": "clerk",
+              "evidence": [
+                "S1"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "archive_request",
+              "name": "Archive request",
+              "kind": "terminal",
+              "actor": "clerk",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ],
+          "transitions": [
+            {
+              "id": "receive_to_archive",
+              "source": "receive_request",
+              "target": "archive_request",
+              "label": "then",
+              "condition": null,
+              "actor": "clerk",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ]
+        },
+        "defects": [],
+        "stages": [
+          "source_spans",
+          "draft_extraction",
+          "source_review",
+          "evidence_validation",
+          "graph_verification"
+        ],
+        "logical_model_calls": 2
+      }
+    },
+    {
+      "case": "missing_rejection",
+      "title": "Approval without a rejection route",
+      "split": "seed",
+      "source_sha256": "d336db9bb62c4b22d6e937555f1b9aa387444af2e7ae114253a68b080228c026",
+      "plain_llm": {
+        "status": "ok",
+        "metrics": {
+          "states": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "transitions": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "actors": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "state_evidence": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "defect_types": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "latency_seconds": 45.14466160000302,
+        "process": {
+          "process_id": "request_review_and_archive",
+          "actors": [
+            "manager",
+            "clerk"
+          ],
+          "states": [
+            {
+              "id": "review_request",
+              "name": "Review request",
+              "kind": "start",
+              "actor": "manager",
+              "evidence": [
+                "S1"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "archive_request",
+              "name": "Archive request",
+              "kind": "terminal",
+              "actor": "clerk",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ],
+          "transitions": [
+            {
+              "id": "review_to_archive_if_approved",
+              "source": "review_request",
+              "target": "archive_request",
+              "label": "Archive request",
+              "condition": "Request is approved",
+              "actor": "clerk",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ]
+        },
+        "defects": [
+          "missing_branch"
+        ],
+        "logical_model_calls": 1
+      },
+      "multipass_verified": {
+        "status": "ok",
+        "metrics": {
+          "states": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "transitions": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "actors": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "state_evidence": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "defect_types": {
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666
+          }
+        },
+        "latency_seconds": 13.57672419998562,
+        "process": {
+          "process_id": "request_review",
+          "actors": [
+            "manager",
+            "clerk"
+          ],
+          "states": [
+            {
+              "id": "review_request",
+              "name": "Review request",
+              "kind": "start",
+              "actor": "manager",
+              "evidence": [
+                "S1"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "archive_request",
+              "name": "Archive request",
+              "kind": "terminal",
+              "actor": "clerk",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ],
+          "transitions": [
+            {
+              "id": "review_approved",
+              "source": "review_request",
+              "target": "archive_request",
+              "label": "Proceed to archive",
+              "condition": "Request approved",
+              "actor": null,
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ]
+        },
+        "defects": [
+          "missing_branch",
+          "unstated_actor"
+        ],
+        "stages": [
+          "source_spans",
+          "draft_extraction",
+          "source_review",
+          "evidence_validation",
+          "graph_verification"
+        ],
+        "logical_model_calls": 2
+      }
+    },
+    {
+      "case": "dead_end",
+      "title": "Procedure stops before completion",
+      "split": "seed",
+      "source_sha256": "dcf7218928e6264c551d6a7896915d5790e4e75554312c17755ba9be8a5692a2",
+      "plain_llm": {
+        "status": "ok",
+        "metrics": {
+          "states": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "transitions": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "actors": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "state_evidence": {
+            "precision": 0.6666666666666666,
+            "recall": 1.0,
+            "f1": 0.8
+          },
+          "defect_types": {
+            "precision": 1.0,
+            "recall": 0.5,
+            "f1": 0.6666666666666666
+          }
+        },
+        "latency_seconds": 6.4393118000007235,
+        "process": {
+          "process_id": "request_check",
+          "actors": [
+            "clerk"
+          ],
+          "states": [
+            {
+              "id": "receive_request",
+              "name": "Receive request",
+              "kind": "start",
+              "actor": "clerk",
+              "evidence": [
+                "S1"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "check_request",
+              "name": "Check request",
+              "kind": "normal",
+              "actor": "clerk",
+              "evidence": [
+                "S2",
+                "S3"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ],
+          "transitions": [
+            {
+              "id": "receive_to_check",
+              "source": "receive_request",
+              "target": "check_request",
+              "label": "Then check request",
+              "condition": null,
+              "actor": "clerk",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ]
+        },
+        "defects": [
+          "dead_end"
+        ],
+        "logical_model_calls": 1
+      },
+      "multipass_verified": {
+        "status": "ok",
+        "metrics": {
+          "states": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "transitions": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "actors": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "state_evidence": {
+            "precision": 0.6666666666666666,
+            "recall": 1.0,
+            "f1": 0.8
+          },
+          "defect_types": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "latency_seconds": 16.797704600030556,
+        "process": {
+          "process_id": "request_handling",
+          "actors": [
+            "clerk"
+          ],
+          "states": [
+            {
+              "id": "receive_request",
+              "name": "Receive request",
+              "kind": "start",
+              "actor": "clerk",
+              "evidence": [
+                "S1"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "check_request",
+              "name": "Check request",
+              "kind": "normal",
+              "actor": "clerk",
+              "evidence": [
+                "S2",
+                "S3"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ],
+          "transitions": [
+            {
+              "id": "receive_to_check",
+              "source": "receive_request",
+              "target": "check_request",
+              "label": "then performs Check request",
+              "condition": null,
+              "actor": "clerk",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ]
+        },
+        "defects": [
+          "dead_end",
+          "invariant_violation"
+        ],
+        "stages": [
+          "source_spans",
+          "draft_extraction",
+          "source_review",
+          "evidence_validation",
+          "graph_verification"
+        ],
+        "logical_model_calls": 2
+      }
+    },
+    {
+      "case": "complete_branch",
+      "title": "Approval and rejection both terminate",
+      "split": "additional_frozen",
+      "source_sha256": "49c7df95c8fc7c923517efec67aece916a76d89239bf591e8f3dbf17ea30f639",
+      "plain_llm": {
+        "status": "ok",
+        "metrics": {
+          "states": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "transitions": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "actors": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "state_evidence": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "defect_types": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "latency_seconds": 8.247412600030657,
+        "process": {
+          "process_id": "claim_review",
+          "actors": [
+            "manager",
+            "clerk"
+          ],
+          "states": [
+            {
+              "id": "review_claim",
+              "name": "Review claim",
+              "kind": "start",
+              "actor": "manager",
+              "evidence": [
+                "S1"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "pay_claim",
+              "name": "Pay claim",
+              "kind": "terminal",
+              "actor": "clerk",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "reject_claim",
+              "name": "Reject claim",
+              "kind": "terminal",
+              "actor": "clerk",
+              "evidence": [
+                "S3"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ],
+          "transitions": [
+            {
+              "id": "t1",
+              "source": "review_claim",
+              "target": "pay_claim",
+              "label": "Pay claim",
+              "condition": "approved",
+              "actor": "clerk",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "t2",
+              "source": "review_claim",
+              "target": "reject_claim",
+              "label": "Reject claim",
+              "condition": "otherwise",
+              "actor": "clerk",
+              "evidence": [
+                "S3"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ]
+        },
+        "defects": [],
+        "logical_model_calls": 1
+      },
+      "multipass_verified": {
+        "status": "ok",
+        "metrics": {
+          "states": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "transitions": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "actors": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "state_evidence": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "defect_types": {
+            "precision": 0.0,
+            "recall": 1.0,
+            "f1": 0.0
+          }
+        },
+        "latency_seconds": 17.026061000011396,
+        "process": {
+          "process_id": "claim_review",
+          "actors": [
+            "manager",
+            "clerk"
+          ],
+          "states": [
+            {
+              "id": "review_claim",
+              "name": "Review claim",
+              "kind": "start",
+              "actor": "manager",
+              "evidence": [
+                "S1"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "pay_claim",
+              "name": "Pay claim",
+              "kind": "terminal",
+              "actor": "clerk",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "reject_claim",
+              "name": "Reject claim",
+              "kind": "terminal",
+              "actor": "clerk",
+              "evidence": [
+                "S3"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ],
+          "transitions": [
+            {
+              "id": "claim_approved",
+              "source": "review_claim",
+              "target": "pay_claim",
+              "label": "Approved",
+              "condition": "Claim is approved",
+              "actor": null,
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "claim_not_approved",
+              "source": "review_claim",
+              "target": "reject_claim",
+              "label": "Otherwise",
+              "condition": "Claim is not approved",
+              "actor": null,
+              "evidence": [
+                "S3"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ]
+        },
+        "defects": [
+          "assumption",
+          "unstated_actor"
+        ],
+        "stages": [
+          "source_spans",
+          "draft_extraction",
+          "source_review",
+          "evidence_validation",
+          "graph_verification"
+        ],
+        "logical_model_calls": 2
+      }
+    },
+    {
+      "case": "missing_owner",
+      "title": "Action has no named responsible person",
+      "split": "additional_frozen",
+      "source_sha256": "29ba3136b953b5ee5c838c040a031a326ab22bfcc3d556c04134066d048c9b62",
+      "plain_llm": {
+        "status": "ok",
+        "metrics": {
+          "states": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "transitions": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "actors": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "state_evidence": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "defect_types": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "latency_seconds": 6.585091200016905,
+        "process": {
+          "process_id": "parcel_storage",
+          "actors": [
+            "clerk"
+          ],
+          "states": [
+            {
+              "id": "receive_parcel",
+              "name": "Receive parcel",
+              "kind": "start",
+              "actor": null,
+              "evidence": [
+                "S1"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "store_parcel",
+              "name": "Store parcel",
+              "kind": "terminal",
+              "actor": "clerk",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ],
+          "transitions": [
+            {
+              "id": "receive_to_store",
+              "source": "receive_parcel",
+              "target": "store_parcel",
+              "label": "Next",
+              "condition": null,
+              "actor": "clerk",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ]
+        },
+        "defects": [
+          "unstated_actor"
+        ],
+        "logical_model_calls": 1
+      },
+      "multipass_verified": {
+        "status": "ok",
+        "metrics": {
+          "states": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "transitions": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "actors": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "state_evidence": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "defect_types": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "latency_seconds": 14.817223600053694,
+        "process": {
+          "process_id": "parcel_storage",
+          "actors": [
+            "clerk"
+          ],
+          "states": [
+            {
+              "id": "receive_parcel",
+              "name": "Receive parcel",
+              "kind": "start",
+              "actor": null,
+              "evidence": [
+                "S1"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "store_parcel",
+              "name": "Store parcel",
+              "kind": "terminal",
+              "actor": "clerk",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ],
+          "transitions": [
+            {
+              "id": "receive_to_store",
+              "source": "receive_parcel",
+              "target": "store_parcel",
+              "label": "Next",
+              "condition": null,
+              "actor": null,
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ]
+        },
+        "defects": [
+          "unstated_actor"
+        ],
+        "stages": [
+          "source_spans",
+          "draft_extraction",
+          "source_review",
+          "evidence_validation",
+          "graph_verification"
+        ],
+        "logical_model_calls": 2
+      }
+    },
+    {
+      "case": "orphan_step",
+      "title": "Disconnected activity has no entry route",
+      "split": "additional_frozen",
+      "source_sha256": "d0153f0e58de147466a27bb555cbb7f04e428c3618db7f4fcd3c696c811846d7",
+      "plain_llm": {
+        "status": "ok",
+        "metrics": {
+          "states": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "transitions": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "actors": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "state_evidence": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "defect_types": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "latency_seconds": 8.203439000004437,
+        "process": {
+          "process_id": "ticket_workflow",
+          "actors": [
+            "clerk",
+            "auditor"
+          ],
+          "states": [
+            {
+              "id": "open_ticket",
+              "name": "Open ticket",
+              "kind": "start",
+              "actor": "clerk",
+              "evidence": [
+                "S1"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "close_ticket",
+              "name": "Close ticket",
+              "kind": "terminal",
+              "actor": "clerk",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "audit_ticket",
+              "name": "Audit ticket",
+              "kind": "terminal",
+              "actor": "auditor",
+              "evidence": [
+                "S3"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ],
+          "transitions": [
+            {
+              "id": "open_to_close",
+              "source": "open_ticket",
+              "target": "close_ticket",
+              "label": "Then performs",
+              "condition": null,
+              "actor": "clerk",
+              "evidence": [
+                "S1",
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ]
+        },
+        "defects": [
+          "unreachable_state"
+        ],
+        "logical_model_calls": 1
+      },
+      "multipass_verified": {
+        "status": "ok",
+        "metrics": {
+          "states": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "transitions": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "actors": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "state_evidence": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "defect_types": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "latency_seconds": 20.972707799985074,
+        "process": {
+          "process_id": "ticket_workflow",
+          "actors": [
+            "clerk",
+            "auditor"
+          ],
+          "states": [
+            {
+              "id": "open_ticket",
+              "name": "Open ticket",
+              "kind": "start",
+              "actor": "clerk",
+              "evidence": [
+                "S1"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "close_ticket",
+              "name": "Close ticket",
+              "kind": "terminal",
+              "actor": "clerk",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "audit_ticket",
+              "name": "Audit ticket",
+              "kind": "terminal",
+              "actor": "auditor",
+              "evidence": [
+                "S3"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ],
+          "transitions": [
+            {
+              "id": "open_to_close",
+              "source": "open_ticket",
+              "target": "close_ticket",
+              "label": "Then perform",
+              "condition": null,
+              "actor": "clerk",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ]
+        },
+        "defects": [
+          "assumption",
+          "unreachable_state"
+        ],
+        "stages": [
+          "source_spans",
+          "draft_extraction",
+          "source_review",
+          "evidence_validation",
+          "graph_verification"
+        ],
+        "logical_model_calls": 2
+      }
+    },
+    {
+      "case": "mandatory_review",
+      "title": "Urgent route bypasses mandatory review",
+      "split": "additional_frozen",
+      "source_sha256": "bc6035a63d3ca69c2bd470b43f6c9130ed6ae4015266dd47eb6135961e8ce7e5",
+      "plain_llm": {
+        "status": "ok",
+        "metrics": {
+          "states": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "transitions": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "actors": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "state_evidence": {
+            "precision": 0.75,
+            "recall": 1.0,
+            "f1": 0.8571428571428571
+          },
+          "defect_types": {
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666
+          }
+        },
+        "latency_seconds": 11.309518199996091,
+        "process": {
+          "process_id": "order_processing",
+          "actors": [
+            "clerk",
+            "manager"
+          ],
+          "states": [
+            {
+              "id": "receive_order",
+              "name": "Receive order",
+              "kind": "start",
+              "actor": "clerk",
+              "evidence": [
+                "S1"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "review_order",
+              "name": "Review order",
+              "kind": "normal",
+              "actor": "manager",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "dispatch_order",
+              "name": "Dispatch order",
+              "kind": "terminal",
+              "actor": "clerk",
+              "evidence": [
+                "S2",
+                "S3"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ],
+          "transitions": [
+            {
+              "id": "routine_to_review",
+              "source": "receive_order",
+              "target": "review_order",
+              "label": "Proceed to review",
+              "condition": "Order is routine",
+              "actor": "manager",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "review_to_dispatch",
+              "source": "review_order",
+              "target": "dispatch_order",
+              "label": "Proceed to dispatch",
+              "condition": "Order is routine",
+              "actor": "clerk",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "urgent_direct_dispatch",
+              "source": "receive_order",
+              "target": "dispatch_order",
+              "label": "Proceed directly to dispatch",
+              "condition": "Order is urgent",
+              "actor": "clerk",
+              "evidence": [
+                "S3"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ]
+        },
+        "defects": [
+          "bypass",
+          "invariant_violation"
+        ],
+        "logical_model_calls": 1
+      },
+      "multipass_verified": {
+        "status": "ok",
+        "metrics": {
+          "states": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "transitions": {
+            "precision": 1.0,
+            "recall": 0.6666666666666666,
+            "f1": 0.8
+          },
+          "actors": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "state_evidence": {
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666
+          },
+          "defect_types": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          }
+        },
+        "latency_seconds": 40.030871099967044,
+        "process": {
+          "process_id": "order_dispatch",
+          "actors": [
+            "clerk",
+            "manager"
+          ],
+          "states": [
+            {
+              "id": "receive_order",
+              "name": "Receive order",
+              "kind": "start",
+              "actor": "clerk",
+              "evidence": [
+                "S1"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "review_order",
+              "name": "Review order",
+              "kind": "normal",
+              "actor": null,
+              "evidence": [
+                "S2",
+                "S4"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "dispatch_order",
+              "name": "Dispatch order",
+              "kind": "terminal",
+              "actor": "clerk",
+              "evidence": [
+                "S2",
+                "S3",
+                "S4"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ],
+          "transitions": [
+            {
+              "id": "receive_to_review",
+              "source": "receive_order",
+              "target": "review_order",
+              "label": "Review routine order",
+              "condition": "Order is routine",
+              "actor": "manager",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "receive_to_review_urgent",
+              "source": "receive_order",
+              "target": "review_order",
+              "label": "Review urgent order",
+              "condition": "Order is urgent",
+              "actor": null,
+              "evidence": [
+                "S1",
+                "S3",
+                "S4"
+              ],
+              "inferred": true,
+              "inference_reason": "S1 makes Receive order the starting step, and S4 requires urgent dispatches to pass through Review order before Dispatch order. Thus the urgent route must include Review order after receiving, notwithstanding S3's conflicting direct-route statement."
+            },
+            {
+              "id": "review_to_dispatch",
+              "source": "review_order",
+              "target": "dispatch_order",
+              "label": "Dispatch after review",
+              "condition": null,
+              "actor": "clerk",
+              "evidence": [
+                "S2",
+                "S4"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ]
+        },
+        "defects": [
+          "assumption",
+          "unstated_actor"
+        ],
+        "stages": [
+          "source_spans",
+          "draft_extraction",
+          "source_review",
+          "evidence_validation",
+          "graph_verification"
+        ],
+        "logical_model_calls": 2
+      }
+    },
+    {
+      "case": "trapped_retry",
+      "title": "Retry cycle has no route to completion",
+      "split": "additional_frozen",
+      "source_sha256": "3a5892aaca1d0bdc92142e1b66b9e10f665a3fdd76ad6f9242f1a05f279af568",
+      "plain_llm": {
+        "status": "ok",
+        "metrics": {
+          "states": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "transitions": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "actors": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "state_evidence": {
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666
+          },
+          "defect_types": {
+            "precision": 1.0,
+            "recall": 0.5,
+            "f1": 0.6666666666666666
+          }
+        },
+        "latency_seconds": 14.870553700020537,
+        "process": {
+          "process_id": "file_check",
+          "actors": [
+            "clerk"
+          ],
+          "states": [
+            {
+              "id": "receive_file",
+              "name": "Receive file",
+              "kind": "start",
+              "actor": "clerk",
+              "evidence": [
+                "S1"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "check_file",
+              "name": "Check file",
+              "kind": "normal",
+              "actor": "clerk",
+              "evidence": [
+                "S2",
+                "S3",
+                "S4"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "retry_check",
+              "name": "Retry check",
+              "kind": "normal",
+              "actor": "clerk",
+              "evidence": [
+                "S3",
+                "S4"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ],
+          "transitions": [
+            {
+              "id": "receive_to_check",
+              "source": "receive_file",
+              "target": "check_file",
+              "label": "Then check file",
+              "condition": null,
+              "actor": "clerk",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "check_to_retry",
+              "source": "check_file",
+              "target": "retry_check",
+              "label": "Retry check",
+              "condition": null,
+              "actor": "clerk",
+              "evidence": [
+                "S3"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "retry_to_check",
+              "source": "retry_check",
+              "target": "check_file",
+              "label": "Return to check file",
+              "condition": null,
+              "actor": "clerk",
+              "evidence": [
+                "S3"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ]
+        },
+        "defects": [
+          "dead_end"
+        ],
+        "logical_model_calls": 1
+      },
+      "multipass_verified": {
+        "status": "ok",
+        "metrics": {
+          "states": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "transitions": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "actors": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "state_evidence": {
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666
+          },
+          "defect_types": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "latency_seconds": 23.932693200011272,
+        "process": {
+          "process_id": "file_check_retry",
+          "actors": [
+            "clerk"
+          ],
+          "states": [
+            {
+              "id": "receive_file",
+              "name": "Receive file",
+              "kind": "start",
+              "actor": "clerk",
+              "evidence": [
+                "S1"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "check_file",
+              "name": "Check file",
+              "kind": "normal",
+              "actor": "clerk",
+              "evidence": [
+                "S2",
+                "S3",
+                "S4"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "retry_check",
+              "name": "Retry check",
+              "kind": "normal",
+              "actor": "clerk",
+              "evidence": [
+                "S3",
+                "S4"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ],
+          "transitions": [
+            {
+              "id": "receive_to_check",
+              "source": "receive_file",
+              "target": "check_file",
+              "label": "Then performs",
+              "condition": null,
+              "actor": "clerk",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "check_to_retry",
+              "source": "check_file",
+              "target": "retry_check",
+              "label": "Always performs",
+              "condition": null,
+              "actor": "clerk",
+              "evidence": [
+                "S3"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "retry_to_check",
+              "source": "retry_check",
+              "target": "check_file",
+              "label": "Returns to",
+              "condition": null,
+              "actor": "clerk",
+              "evidence": [
+                "S3"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ]
+        },
+        "defects": [
+          "dead_end",
+          "invariant_violation"
+        ],
+        "stages": [
+          "source_spans",
+          "draft_extraction",
+          "source_review",
+          "evidence_validation",
+          "graph_verification"
+        ],
+        "logical_model_calls": 2
+      }
+    },
+    {
+      "case": "failure_path",
+      "title": "Explicit failure route is preserved",
+      "split": "additional_frozen",
+      "source_sha256": "15017c5505692e8a24a2000105254517c9f16aa8a177ec265791b204c103f512",
+      "plain_llm": {
+        "status": "ok",
+        "metrics": {
+          "states": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "transitions": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "actors": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "state_evidence": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "defect_types": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          }
+        },
+        "latency_seconds": 7.82053690002067,
+        "process": {
+          "process_id": "device_test_and_disposition",
+          "actors": [
+            "technician"
+          ],
+          "states": [
+            {
+              "id": "test_device",
+              "name": "Test device",
+              "kind": "start",
+              "actor": "technician",
+              "evidence": [
+                "S1"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "release_device",
+              "name": "Release device",
+              "kind": "terminal",
+              "actor": "technician",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "quarantine_device",
+              "name": "Quarantine device",
+              "kind": "terminal",
+              "actor": "technician",
+              "evidence": [
+                "S3"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ],
+          "transitions": [
+            {
+              "id": "test_succeeds",
+              "source": "test_device",
+              "target": "release_device",
+              "label": "Release device",
+              "condition": "The test succeeds",
+              "actor": "technician",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "test_fails",
+              "source": "test_device",
+              "target": "quarantine_device",
+              "label": "Quarantine device",
+              "condition": "The test fails",
+              "actor": "technician",
+              "evidence": [
+                "S3"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ]
+        },
+        "defects": [],
+        "logical_model_calls": 1
+      },
+      "multipass_verified": {
+        "status": "ok",
+        "metrics": {
+          "states": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "transitions": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "actors": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "state_evidence": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0
+          },
+          "defect_types": {
+            "precision": 0.0,
+            "recall": 1.0,
+            "f1": 0.0
+          }
+        },
+        "latency_seconds": 18.432996899995487,
+        "process": {
+          "process_id": "device_test_and_disposition",
+          "actors": [
+            "technician"
+          ],
+          "states": [
+            {
+              "id": "test_device",
+              "name": "Test device",
+              "kind": "start",
+              "actor": "technician",
+              "evidence": [
+                "S1"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "release_device",
+              "name": "Release device",
+              "kind": "terminal",
+              "actor": "technician",
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "quarantine_device",
+              "name": "Quarantine device",
+              "kind": "terminal",
+              "actor": "technician",
+              "evidence": [
+                "S3"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ],
+          "transitions": [
+            {
+              "id": "test_succeeds",
+              "source": "test_device",
+              "target": "release_device",
+              "label": "Test succeeds",
+              "condition": "The test succeeds",
+              "actor": null,
+              "evidence": [
+                "S2"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            },
+            {
+              "id": "test_fails",
+              "source": "test_device",
+              "target": "quarantine_device",
+              "label": "Test fails",
+              "condition": "The test fails",
+              "actor": null,
+              "evidence": [
+                "S3"
+              ],
+              "inferred": false,
+              "inference_reason": null
+            }
+          ]
+        },
+        "defects": [
+          "assumption",
+          "unstated_actor"
+        ],
+        "stages": [
+          "source_spans",
+          "draft_extraction",
+          "source_review",
+          "evidence_validation",
+          "graph_verification"
+        ],
+        "logical_model_calls": 2
+      }
+    }
+  ],
+  "started_at": "2026-11-12T14:15:57.212280+00:00",
+  "dataset_sha256": "47826ba9d2f552aec843968826e0a2df7bce08e1b43c48c57d6d98c5d34dd9a4",
+  "methodology": "Same model, one logical call for plain-LLM extraction plus defect prediction versus two extraction/review calls plus deterministic verification; invalid references can add one correction call. Gold annotations excluded from prompts. Macro scores cover successful cases only; failures are reported separately. Logical calls exclude transport retries.",
+  "limitations": "Nine author-annotated synthetic cases (three existing seeds and six frozen additional cases), not independent validation or a production accuracy estimate. One run per method does not measure sampling variance. Names use normalized exact match; synonyms can score as errors. Transition scores measure endpoints, not condition meaning. Evidence is scored for states. Defects are scored by category, not location. Empty/empty scores one. Manual source review remains necessary.",
+  "summary": {
+    "plain_llm": {
+      "successful_cases": 9,
+      "failed_cases": 0,
+      "macro_metrics_on_successes": {
+        "states": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "transitions": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "actors": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "state_evidence": {
+          "precision": 0.8796296296296297,
+          "recall": 1.0,
+          "f1": 0.924867724867725
+        },
+        "defect_types": {
+          "precision": 0.9444444444444444,
+          "recall": 0.8888888888888888,
+          "f1": 0.8888888888888888
+        }
+      },
+      "logical_model_calls": 9,
+      "latency_seconds": 118.2844047000981
+    },
+    "multipass_verified": {
+      "successful_cases": 9,
+      "failed_cases": 0,
+      "macro_metrics_on_successes": {
+        "states": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "transitions": {
+          "precision": 1.0,
+          "recall": 0.9629629629629629,
+          "f1": 0.9777777777777779
+        },
+        "actors": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "state_evidence": {
+          "precision": 0.8518518518518519,
+          "recall": 1.0,
+          "f1": 0.9037037037037037
+        },
+        "defect_types": {
+          "precision": 0.6111111111111112,
+          "recall": 0.8888888888888888,
+          "f1": 0.6296296296296297
+        }
+      },
+      "logical_model_calls": 18,
+      "latency_seconds": 177.99310180003522
+    }
+  },
+  "updated_at": "2026-11-12T14:20:53.846701+00:00",
+  "model": "gpt-6-luna"
+}

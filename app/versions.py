@@ -14,8 +14,9 @@ class RevisionRequest(Contract):
 
 
 def revise(original: Analysis, parent_id: str, request: RevisionRequest) -> Analysis:
-    if request.process is None and request.rules is None:
-        raise ValueError("Supply workflow edits or required-step rules")
+    # A reason-only revision is a valid immutable checkpoint. This supports clients
+    # that create a version before collecting field-level edits, without mutating
+    # the parent analysis.
     process = (request.process or original.process).model_copy(deep=True)
     previous: dict[tuple[str, str], State | Transition] = {("state", s.id): s for s in original.process.states}
     previous.update({("transition", e.id): e for e in original.process.transitions})

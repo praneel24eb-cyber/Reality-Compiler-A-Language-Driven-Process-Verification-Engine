@@ -2,8 +2,10 @@
 
 Transform business procedures into traceable, verifiable workflow intelligence.
 
-This repository was initialized in an empty workspace. Streamlit uses its default
-appearance intentionally: visual design remains with the project owner.
+The workspace uses a forest green navigation area, neutral canvas and teal controls.
+See [interface acceptance](docs/interface.md) and the
+[phase-by-phase Git checkpoints](docs/git-phases.md). Implementation is currently
+paused at the owner's request while the existing work is published in phase order.
 
 The objectives and implementation are mapped in
 [Objectives and methodology](docs/objectives-and-methodology.md).
@@ -35,7 +37,7 @@ HTML or diagram code. Provider credentials stay in the backend. Rendering and
 interaction were browser-tested with explicit synthetic fixtures; live ChatGPT API
 checks and their limitations are recorded under `testing/`. This uses Streamlit's supported
 [custom component API](https://docs.streamlit.io/develop/concepts/custom-components/components-v2)
-and requires Streamlit 1.51 or newer. Styling remains deliberately neutral.
+and requires Streamlit 1.51 or newer.
 
 ## Local startup
 
@@ -109,7 +111,7 @@ The extraction benchmark uses normalized state names, transition endpoints, acto
 state evidence pairs, and defect categories. Precision and recall use unique sets;
 empty/empty scores 1. Gold labels never enter provider prompts. The baseline uses
 one AI call; the reviewed pipeline uses two calls and deterministic verification.
-Three annotated seed cases live in `app/benchmark_cases.json`; ten separate verifier
+Nine annotated synthetic cases live in `app/benchmark_cases.json`; ten separate verifier
 fixtures live in `tests/fixtures/evaluation.json`. This small synthetic set is not a
 production accuracy estimate. Exact-match scores penalize synonymous wording and
 do not measure condition semantics. Reports retain predictions, latency, and failures.
@@ -159,8 +161,10 @@ restore a compatible database backup if schema rollback is needed.
 ## Current verification limits
 
 Local execution uses the available Python 3.14; CI and images target Python 3.11.
-Live ChatGPT checks are recorded in `testing/`; UI logic is checked with Streamlit
-AppTest. Current browser-level rendering, VPS deployment, Docker build, and PostgreSQL
-integration have not been verified. Dependency versions are bounded
-but not locked. Graph checks cannot certify business compliance. The UI intentionally
-has no custom visual theme. This is a foundation, not a claim of enterprise readiness.
+UI logic is checked with Streamlit AppTest and canvas interactions were checked in
+Chrome on desktop and mobile viewports. The live synthetic benchmark is saved in
+`docs/evaluation/run-2026-11-12.json`; it does not establish general accuracy or
+overall improvement over the baseline. Existing GitHub CI failed its mypy step;
+diagnosis is pending. VPS deployment, Docker builds and PostgreSQL integration
+remain unverified. Dependencies are bounded but not locked. Graph checks cannot
+certify business compliance. See the phase checkpoints for the paused work.

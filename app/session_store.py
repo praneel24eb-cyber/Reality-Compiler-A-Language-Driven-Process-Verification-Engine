@@ -18,8 +18,8 @@ def protect(data: bytes, *, decrypt: bool = False) -> bytes:
     buffer = ctypes.create_string_buffer(data)
     incoming = Blob(len(data), ctypes.cast(buffer, ctypes.POINTER(ctypes.c_byte)))
     outgoing = Blob()
-    crypt = ctypes.WinDLL("crypt32", use_last_error=True)
-    kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+    crypt = ctypes.WinDLL("crypt32", use_last_error=True)  # type: ignore[attr-defined]
+    kernel = ctypes.WinDLL("kernel32", use_last_error=True)  # type: ignore[attr-defined]
     function = crypt.CryptUnprotectData if decrypt else crypt.CryptProtectData
     function.argtypes = [ctypes.POINTER(Blob), ctypes.c_void_p, ctypes.c_void_p,
                          ctypes.c_void_p, ctypes.c_void_p, wintypes.DWORD, ctypes.POINTER(Blob)]
@@ -46,7 +46,7 @@ class SessionStore:
         if not self.enabled:
             yield
             return
-        import msvcrt
+        import msvcrt  # type: ignore[import-not-found]
 
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with self.path.with_suffix(".lock").open("a+b") as lock:
@@ -54,12 +54,12 @@ class SessionStore:
                 lock.write(b"0")
                 lock.flush()
             lock.seek(0)
-            msvcrt.locking(lock.fileno(), msvcrt.LK_LOCK, 1)
+            msvcrt.locking(lock.fileno(), msvcrt.LK_LOCK, 1)  # type: ignore[attr-defined]
             try:
                 yield
             finally:
                 lock.seek(0)
-                msvcrt.locking(lock.fileno(), msvcrt.LK_UNLCK, 1)
+                msvcrt.locking(lock.fileno(), msvcrt.LK_UNLCK, 1)  # type: ignore[attr-defined]
 
     def load(self) -> dict:
         if not self.enabled or not self.path.exists():

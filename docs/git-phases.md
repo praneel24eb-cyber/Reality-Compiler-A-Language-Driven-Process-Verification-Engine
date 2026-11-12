@@ -37,10 +37,14 @@ The existing published commits are preserved when this sequence is merged into
   0.630 versus 0.889 for the baseline: the result does **not** demonstrate overall
   improvement. Benchmark analysis and further tuning were paused.
 - The local dependency audit reported no known vulnerabilities at the time run.
-- The existing GitHub Actions runs for `4dae8c0` and `1aadbb7` failed at
-  `mypy app ui`, despite local mypy passing. CI diagnosis/fixes remain pending.
-- Dependency locking, container/PostgreSQL execution checks and broader release
-  validation remain pending. No hosting deployment was requested for this round.
+- Existing GitHub Actions logs identified Windows-specific `ctypes.WinDLL` and
+  `msvcrt` typing as the cause of Linux mypy failures. The source now carries
+  targeted platform annotations and local mypy passes.
+- Python 3.11 hash-pinned runtime and development locks now feed CI and both
+  container builds. CI now covers PostgreSQL migrations, browser checks, dependency
+  audit and Windows DPAPI tests. The updated remote workflow has not yet completed.
+- Docker is unavailable locally, so container builds remain unverified. No hosting
+  deployment was requested for this round.
 - Database files, OAuth registrations, encrypted sessions, downloaded source PDFs,
   virtual environments, caches and local logs are excluded from publication.
 

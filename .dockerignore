@@ -1,6 +1,11 @@
 .venv
 .git
 .env
+.venv
+.local
+*.db
+*.session
+*.session.tmp
 .local
 *.db
 **/__pycache__

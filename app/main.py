@@ -3,7 +3,20 @@
 import logging
 import os
 from datetime import datetime
+from pathlib import Path
 from time import perf_counter
+
+# Load .env file if present so LLM_API_KEY / LLM_MODEL survive backend restarts
+try:
+    _env_file = Path(__file__).parent.parent / ".env"
+    if _env_file.exists():
+        for _line in _env_file.read_text(encoding="utf-8").splitlines():
+            _line = _line.strip()
+            if _line and not _line.startswith("#") and "=" in _line:
+                _k, _, _v = _line.partition("=")
+                os.environ.setdefault(_k.strip(), _v.strip())
+except Exception:
+    pass
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
@@ -19,9 +32,17 @@ from app.builder import DraftAnswer, NewDraft, draft_source, draft_view
 from app.canvas import ChatRequest, ChatResponse, respond
 from app.chatgpt_auth import ChatGPTConnection
 from app.chatgpt_client import ChatGPTClient
-from app.database import SavedAnalysis, SavedDraft, SavedScenario, make_engine
+from app.database import Base, SavedAnalysis, SavedDraft, SavedScenario, make_engine
 from app.engine import Analysis, Rule, Scenario, graph, simulate
-from app.llm import ExtractionError, HostedClient, LLMClient
+from app.llm import (
+    ExtractionError,
+    GroqClient,
+    HostedClient,
+    LLMClient,
+    clear_groq_key,
+    groq_status,
+    set_groq_key,
+)
 from app.models import Contract
 from app.pipeline import compile_sop
 from app.preprocessing import MAX_SOURCE
@@ -54,13 +75,19 @@ def create_app(client: LLMClient | None = None, engine=None) -> FastAPI:
     """Construct the API with injectable provider and database for tests."""
     api = FastAPI(title="Reality Compiler", version="2.0.0")
     db = engine if engine is not None else make_engine()
+    Base.metadata.create_all(db)
     connection = ChatGPTConnection()
-    local_chatgpt = client is None and os.getenv("LLM_PROVIDER", "chatgpt") == "chatgpt"
+    local_chatgpt = client is None and os.getenv("LLM_PROVIDER", "groq") == "chatgpt"
+    use_groq = client is None and os.getenv("LLM_PROVIDER", "groq") == "groq"
     llm = (
         client
         if client is not None
-        else (ChatGPTClient(connection) if local_chatgpt else HostedClient())
+        else (ChatGPTClient(connection) if local_chatgpt else (GroqClient() if use_groq else HostedClient()))
     )
+
+    # Auto-seed Groq runtime key from env so the key survives backend restarts
+    if use_groq and os.getenv("LLM_API_KEY"):
+        set_groq_key(os.getenv("LLM_API_KEY"), os.getenv("LLM_MODEL"))
 
     @api.middleware("http")
     async def safe_request(request: Request, call_next):
@@ -178,6 +205,26 @@ def create_app(client: LLMClient | None = None, engine=None) -> FastAPI:
     def disconnect():
         connection.disconnect()
         return connection.status()
+
+    # ── Groq API key management (runtime memory only, never persisted) ──
+
+    class GroqKeyRequest(Contract):
+        api_key: str | None = Field(default=None, max_length=500)
+        model: str | None = None
+
+    @api.get("/api/groq/status")
+    def groq_key_status():
+        return groq_status()
+
+    @api.post("/api/groq/key")
+    def set_groq_api_key(request: GroqKeyRequest):
+        set_groq_key(request.api_key, request.model)
+        return groq_status()
+
+    @api.delete("/api/groq/key")
+    def clear_groq_api_key():
+        clear_groq_key()
+        return groq_status()
 
     @api.get("/health")
     def health():

@@ -42,7 +42,7 @@ class Transition(Contract):
     condition: str | None
     actor: str | None
     evidence: list[str] = Field(min_length=1)
-    inferred: bool
+    inferred: bool = False
     inference_reason: str | None
 
     @model_validator(mode="after")

@@ -9,17 +9,21 @@ h3 {font-size:1.1rem!important;letter-spacing:-.015em!important}
 .rc-topbar {display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 0 22px;border-bottom:1px solid var(--rc-line);margin-bottom:24px;font-size:10px;letter-spacing:.14em;font-weight:650;color:#6d7c76}
 .rc-slash {margin:0 12px;color:#b4c1b8}
 .rc-badge {border:1px solid #d6e4da;background:#edf5ed;border-radius:30px;padding:6px 12px;color:#436954;letter-spacing:.02em;font-size:11px}
-[data-testid="stSidebar"] {background:#142e2b;border-right:1px solid #25403a}
+[data-testid="stSidebar"] {background:#142e2b!important;border-right:1px solid #25403a;color:#ffffff!important}
+[data-testid="stSidebar"] * {color:#ffffff}
 [data-testid="stSidebar"] [data-testid="stSidebarContent"] {padding-top:12px}
-[data-testid="stSidebar"] [data-testid="stCaptionContainer"] {color:#afc5ba;font-size:12px;padding:0 5px 14px}
+[data-testid="stSidebar"] [data-testid="stCaptionContainer"], [data-testid="stSidebar"] [data-testid="stCaptionContainer"] * {color:#d0ded6!important;font-size:12px;padding:0 5px 14px}
 [data-testid="stSidebarNav"] {padding-top:6px}
-[data-testid="stSidebarNav"] a {color:#c7d8cf!important;border-radius:9px;margin:3px 10px;min-height:39px;font-size:13px}
-[data-testid="stSidebarNav"] a:hover {background:#24473f}
-[data-testid="stSidebarNav"] a[aria-current="page"] {background:#31584d;color:#fff!important;box-shadow:inset 3px 0 #a9d9a5}
-[data-testid="stSidebar"] button {color:#d9e9df}
-.rc-brand {display:flex;gap:12px;align-items:center;color:#e6f2e7;font-size:23px;line-height:1.05;letter-spacing:-.7px;padding:4px 4px 20px}
-.rc-mark {font-size:42px;font-weight:300;color:#bada9e}
-.rc-sidebar-kicker {color:#91ae9f;font-size:9px;letter-spacing:2px;font-weight:700;padding:6px 4px 14px}
+[data-testid="stSidebarNav"] a, [data-testid="stSidebarNavLink"], [data-testid="stSidebarNav"] a *, [data-testid="stSidebarNavLink"] *, [data-testid="stSidebarNavItems"] * {color:#ffffff!important;fill:#ffffff!important;opacity:1!important}
+[data-testid="stSidebarNav"] a, [data-testid="stSidebarNavLink"] {border-radius:9px;margin:3px 10px;min-height:40px;font-size:14px!important;font-weight:500!important}
+[data-testid="stSidebarNav"] a:hover, [data-testid="stSidebarNavLink"]:hover {background:#20483f!important;color:#ffffff!important}
+[data-testid="stSidebarNav"] a[aria-current="page"], [data-testid="stSidebarNavLink"][aria-current="page"], [data-testid="stSidebarNav"] a:has([aria-current="page"]), [data-testid="stSidebarNav"] a[data-selected="true"], [data-testid="stSidebarNavLink"][data-selected="true"] {background:#2b5e52!important;color:#ffffff!important;font-weight:700!important;box-shadow:inset 4px 0 #5cdbb5!important}
+[data-testid="stSidebarNav"] a[aria-current="page"] *, [data-testid="stSidebarNavLink"][aria-current="page"] * {color:#ffffff!important;font-weight:700!important}
+[data-testid="stSidebar"] button, [data-testid="stSidebar"] button * {color:#ffffff!important}
+.rc-brand {display:flex;gap:12px;align-items:center;color:#ffffff!important;font-size:23px;line-height:1.05;letter-spacing:-.7px;padding:4px 4px 20px}
+.rc-brand * {color:#ffffff!important}
+.rc-mark {font-size:42px;font-weight:300;color:#5cdbb5!important}
+.rc-sidebar-kicker {color:#a4c9be!important;font-size:10px;letter-spacing:2px;font-weight:700;padding:6px 4px 14px}
 [data-testid="stMetric"] {background:#fff;border:1px solid var(--rc-line);border-radius:14px;padding:18px 22px;box-shadow:0 2px 2px #20333003}
 [data-testid="stMetricLabel"] {color:#698077;font-size:12px}
 [data-testid="stMetricValue"] {font-size:2.1rem;letter-spacing:-.06em}

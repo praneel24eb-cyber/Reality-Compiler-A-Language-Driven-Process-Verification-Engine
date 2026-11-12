@@ -99,22 +99,53 @@ def dashboard():
 
 def studio():
     st.title("SOP Input Studio")
+
+    # ── Groq status banner — warn before analysis if key is missing ──────────
+    try:
+        groq_resp = httpx.get(BASE + "/api/groq/status", timeout=4)
+        groq_ok = groq_resp.status_code == 200 and groq_resp.json().get("connected")
+    except Exception:
+        groq_ok = False
+    if not groq_ok:
+        st.warning(
+            "⚠ No Groq API key saved. Go to **API Key (Groq)** in the sidebar and enter your key before analyzing.",
+            icon="🔑",
+        )
+
+    # ── File upload: cache pages in session_state so switching tabs doesn't lose it ──
     upload = st.file_uploader("Upload an SOP PDF or UTF-8 text file", type=["pdf", "txt"])
+
+    # When a new file is uploaded store its bytes/pages so they survive tab switches
     if upload is not None:
+        file_key = f"upload_{upload.name}_{upload.size}"
+        if st.session_state.get("_upload_key") != file_key:
+            # New upload — clear cached pages
+            st.session_state["_upload_key"] = file_key
+            st.session_state.pop("_pdf_pages", None)
+
         if upload.size > 10_000_000:
             st.error("File exceeds 10 MB.")
         elif upload.name.lower().endswith(".pdf"):
             try:
-                pages = pdf_pages(upload.getvalue())
+                # Cache parsed pages so re-renders don't re-parse
+                if "_pdf_pages" not in st.session_state:
+                    st.session_state["_pdf_pages"] = pdf_pages(upload.getvalue())
+                pages = st.session_state["_pdf_pages"]
+                # Restore previously selected pages across tab switches
                 selected_pages = st.multiselect(
-                    "Pages to analyze (1-based)", list(range(1, len(pages) + 1))
+                    "Pages to analyze (1-based)",
+                    list(range(1, len(pages) + 1)),
+                    default=st.session_state.get("_selected_pages", []),
+                    key="page_selector",
                 )
+                st.session_state["_selected_pages"] = selected_pages
                 if st.button("Load selected pages", disabled=not selected_pages):
                     text = "\n\n".join(pages[i - 1] for i in sorted(selected_pages))
                     if len(text) > 30000:
                         st.error("Select fewer pages: analysis limit is 30,000 characters.")
                     else:
                         st.session_state["source"] = text
+                        st.rerun()
                 st.caption(
                     "Text extraction only. Review the editor for reading order and missing diagrams before analysis."
                 )
@@ -127,8 +158,10 @@ def studio():
                     st.error("Select a shorter SOP: 30,000 character limit.")
                 else:
                     st.session_state["source"] = text
+                    st.rerun()
             except UnicodeDecodeError:
                 st.error("Use a UTF-8 text file.")
+
     hbl = Path("testing/hbl/purchase-manual-sop.pdf")
     if hbl.exists() and st.button("Load HBL material receipt section (public SOP)"):
         pages = pdf_pages(hbl.read_bytes())
@@ -142,6 +175,9 @@ def studio():
         st.session_state["source"] = (
             "The clerk receives a request. The manager reviews it. The clerk archives it."
         )
+        st.rerun()
+
+    # source is stored in session_state["source"] so it persists across tab switches
     source = st.text_area("Original SOP", key="source", height=250, max_chars=30000)
     st.caption(f"{len(source)} characters")
     if source.strip():
@@ -154,8 +190,19 @@ def studio():
             return
     st.caption("Explicit mandatory steps are extracted from the source. Review or add required-step rules by name in Workflow Explorer after analysis.")
     if st.button("Analyze and save", disabled=not source.strip()):
-        with st.spinner("Extracting and verifying workflow"):
-            saved = api("/analyses", {"source": source, "rules": []})
+        saved = None
+        error_msg = None
+        with st.spinner("Extracting and verifying workflow..."):
+            try:
+                with httpx.Client(timeout=300) as client:
+                    response = client.post(BASE + "/analyses", json={"source": source, "rules": []})
+                    response.raise_for_status()
+                    saved = response.json()
+            except (httpx.HTTPError, ValueError) as exc:
+                error_msg = request_error(exc)
+        if error_msg:
+            st.error(error_msg)
+            return
         process = saved["analysis"]["process"]
         if not process["transitions"]:
             st.warning(
@@ -386,7 +433,7 @@ st.navigation(
     [
         st.Page(canvas_page, title="AI Canvas", icon=":material/dashboard_customize:"),
         st.Page(builder_page, title="Workflow Builder", icon=":material/add_circle:"),
-        st.Page(connection_page, title="ChatGPT Connection", icon=":material/link:"),
+        st.Page(connection_page, title="API Key (Groq)", icon=":material/key:"),
         st.Page(dashboard, title="Executive Dashboard", icon=":material/space_dashboard:"),
         input_page,
         st.Page(inspector, title="Extraction Inspector", icon=":material/find_in_page:"),

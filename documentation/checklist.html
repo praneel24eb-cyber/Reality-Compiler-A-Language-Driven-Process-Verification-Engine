@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reality Compiler: build checklist</title>
+<style>
+:root{--bg:#f3f5f4;--card:#fff;--ink:#16211f;--mute:#5d6b68;--line:#d9dfdd;--acc:#0f6e56;--should:#9a6a12;--defer:#5d6b68}
+@media (prefers-color-scheme:dark){:root{--bg:#101615;--card:#18201e;--ink:#e6ecea;--mute:#9aa8a5;--line:#2b3633;--acc:#4fc3a1;--should:#e0b050;--defer:#9aa8a5}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+h1,h2,h3,summary b{font-family:Georgia,"Times New Roman",serif;font-weight:600}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:14px 20px 10px}
+.wrap{max-width:860px;margin:0 auto}
+h1{margin:0 0 2px;font-size:22px}
+.sub{color:var(--mute);font-size:13px;margin:0 0 10px}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--acc);width:0;transition:width .25s}
+.stats{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;margin:8px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button{font:inherit;font-size:13px;padding:5px 11px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:6px;cursor:pointer}
+button[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:#fff}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.sp{flex:1}
+main{padding:16px 20px 60px}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;margin:0 0 12px}
+summary{cursor:pointer;padding:12px 14px;display:flex;align-items:center;gap:12px;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary b{font-size:16px;flex:1}
+.cnt{font-size:13px;color:var(--mute);min-width:42px;text-align:right}
+.mini{width:70px;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.mini i{display:block;height:100%;background:var(--acc)}
+ul{list-style:none;margin:0;padding:0 14px 8px}
+li{border-top:1px solid var(--line)}
+label{display:flex;gap:10px;align-items:flex-start;padding:8px 0;cursor:pointer}
+input[type=checkbox]{margin-top:4px;width:16px;height:16px;accent-color:var(--acc);flex:none}
+.t{flex:1}
+li.d .t{color:var(--mute);text-decoration:line-through}
+.tag{font-size:12px;padding:0 8px;border:1px solid currentColor;border-radius:10px;flex:none;margin-top:2px}
+.M{color:var(--acc)}.S{color:var(--should)}.D{color:var(--defer)}
+.tabs{margin:12px 0 0}
+section[hidden]{display:none}
+.spec h2{font-size:18px;margin:22px 0 6px}
+.spec h3{font-size:15px;margin:14px 0 4px}
+.spec p,.spec li{max-width:70ch}
+.spec ul{list-style:disc;padding-left:20px;margin:4px 0 8px}
+.spec li{border:0}
+pre{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto;font-size:13px;line-height:1.5}
+table{border-collapse:collapse;width:100%;font-size:14px;background:var(--card)}
+td,th{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.empty{color:var(--mute);padding:20px 0}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<h1>Reality Compiler: build checklist</h1>
+<p class="sub">Module-wise tasks from the merged spec. Last updated 12 Nov 2026.</p>
+<div class="bar" role="progressbar" aria-label="Overall progress"><i id="pb"></i></div>
+<div class="stats"><span id="s1"></span><span id="s2"></span></div>
+<div class="row" id="filters"></div>
+<div class="row tabs" id="tabs"></div>
+</div></header>
+<main><div class="wrap">
+<section id="list"></section>
+<section id="spec" class="spec" hidden>
+<h2>Scope</h2>
+<p>In scope: sequential workflows, conditional branching, named actors, states and transitions, sentence-level evidence, explicit assumptions, graph-based verification, what-if on supported structures. Cycles are allowed, so path enumeration is always bounded.</p>
+<p>Out of scope: parallel gateways and concurrency, timers, asynchronous events, BPMN execution, autonomous process execution, unrequested integrations.</p>
+<h2>Pipeline</h2>
+<p>M1 Preprocessing, M2 LLM extraction, M3 Validation and gap detection, M4 Graph builder (MultiDiGraph), M5 Verification and what-if, M6 UI and report, M7 Database and API, M8 Evaluation. The LLM is used only in M2 and the M3 suggestion step. Verification is deterministic.</p>
+<h2>Data contract (do not add or rename fields)</h2>
+<pre>Sentence    id, text
+State       id (snake_case, unique), name, kind (start|normal|terminal), actor|None,
+            evidence[] (non-empty), inferred=False, inference_reason|None
+Transition  id, source, target, label, condition|None, actor|None,
+            evidence[] (non-empty), inferred=False, inference_reason|None
+ProcessModel process_id, actors[], states[], transitions[]
+Finding     id, type, severity (info|warning|error), location|None, message,
+            evidence[], counterexample_path[]|None
+types: unsupported_element, assumption, missing_branch, unstated_actor,
+       dead_end, unreachable_state, bypass, invariant_violation</pre>
+<p>Request, response, persistence and evaluation models are separate. Edge IDs for counterexamples and finding status (open, confirmed, dismissed) live outside <code>Finding</code>.</p>
+<h2>Amendments over the original prompt</h2>
+<ul>
+<li>Keep MultiDiGraph so parallel transitions stay distinct. Transition.inferred defaults to False.</li>
+<li>M3 adds a multi-run consistency check (n=3), where elements missing from a majority of runs become assumption findings. It also adds LLM missing-outcome suggestions, shown as info and prefixed "Suggested:", never stored as facts.</li>
+<li>Human review: confirm, dismiss or edit findings, with re-validation and re-verification after every edit.</li>
+<li>What-if also supports add_state and add_transition.</li>
+<li>Evaluation: at least 30 SOPs, a fixed dev/test split (test reported only with a --final flag), seeded defects, baseline A (single direct prompt), baseline B (pipeline without M3), per-source reporting, hallucination rate.</li>
+<li>Complete every Must item before any Should or Defer item.</li>
+</ul>
+<h2>Working rules</h2>
+<ul>
+<li>One phase per session. Stop after each phase with test results and wait for confirmation.</li>
+<li>No fabricated scores, no mocked UI metrics, no claiming deployment unless verified, no compliance claims from structural checks alone.</li>
+<li>Treat SOP text as untrusted input. Never log full SOP content or commit secrets.</li>
+<li>A valid evidence ID does not prove semantic support. Flag uncertain support for review.</li>
+</ul>
+<h2>Priority tiers</h2>
+<table><tr><th>Tier</th><th>Contents</th></tr>
+<tr><td>Must</td><td>M1 to M5, persistence and API, evaluation with baselines, six core UI pages, tests, CI with pytest and ruff</td></tr>
+<tr><td>Should</td><td>Alembic, dashboard page, local Docker Compose, mypy on core modules, semantic-support flagging</td></tr>
+<tr><td>Defer</td><td>VPS and HTTPS deployment, backup and restore docs, dependency scanning, production Postgres hardening</td></tr></table>
+</section>
+</div></main>
+<script>
+/* Task format: [id, tier (M/S/D), text, done (1 = done)]. Edit the done flag to update the file. */
+const D=[
+['Setup and decisions',[
+['s1','M','Save the merged spec in the repo as docs/SPEC.md and point the coding agent to it',1],
+['s2','M','Pick the LLM provider and test extraction on 3 sample SOPs',1],
+['s3','M','Freeze the data contract (Pydantic models, inferred defaults to False)',1],
+['s4','M','Assign module owners and agree the phase review routine',1],
+['s5','M','Audit the existing repo and run baseline tests (skip if starting fresh)',1]]],
+['M1 Preprocessing',[
+['1.1','M','Sentence splitter with stable IDs (S1..Sn), abbreviations and numbered lists',1],
+['1.2','M','Preserve raw text; reject empty or oversized input with clear errors',1],
+['1.3','M','Treat SOP text as untrusted; add a prompt-injection test case',1],
+['1.4','M','Tests for edge cases (empty, lists, abbreviations, very long text)',1]]],
+['M2 LLM extraction',[
+['2.1','M','LLMClient interface plus deterministic FakeLLMClient',1],
+['2.2','M','One hosted adapter with env config, timeout and bounded retries',1],
+['2.3','M','Versioned extraction prompt with rules, schema and few-shot examples from dev split',0],
+['2.4','M','Pydantic validation of output, retry with the validation error on failure',0],
+['2.5','M','Handle refusals, invalid output and service errors explicitly',1],
+['2.6','M','Tests with the fake client: valid, malformed, recovers on retry',0]]],
+['M3 Validation and gap detection',[
+['3.1','M','Evidence check: unknown IDs and unsupported elements become findings',1],
+['3.2','M','Reference checks: duplicate IDs, missing start, bad source or target',1],
+['3.3','M','Inferred elements produce assumption findings with reasons',1],
+['3.4','M','Multi-run consistency (n=3), disagreement flagged as assumption',0],
+['3.5','M','Deterministic gap rules: missing branch, unstated actor, no terminal',1],
+['3.6','M','LLM missing-outcome suggestions, info severity, labelled "Suggested:"',0],
+['3.7','S','Flag uncertain semantic support for review instead of asserting grounding',1],
+['3.8','M','Tests for every rule, including malformed versus valid-but-incomplete',1]]],
+['M4 Graph builder',[
+['4.1','M','MultiDiGraph keeping IDs, evidence, actors, labels and conditions',1],
+['4.2','M','Deterministic build that never mutates the ProcessModel',1],
+['4.3','M','Safe serialization for the UI',1],
+['4.4','M','Tests: parallel edges, cycles, disconnected nodes',1]]],
+['M5 Verification',[
+['5.1','M','Reachability, dead ends, start and terminal constraints',1],
+['5.2','M','Cycles with no exit to a terminal',1],
+['5.3','M','Bypass check with documented semantics',1],
+['5.4','M','Invariants (precedence, reachability, always terminates), configured outside the contract',1],
+['5.5','M','Real counterexample paths; bounded path enumeration (max paths and length)',1],
+['5.6','M','Tests on hand-built graphs with exact expected findings and paths',1]]],
+['M5 What-if analysis',[
+['w1','M','Operations: remove transition, remove state, change condition or label',1],
+['w2','M','Operations: add_state and add_transition',0],
+['w3','M','Run on copies, then revalidate, rebuild graph and reverify',1],
+['w4','M','Compare: new findings, resolved findings, reachability changes',1],
+['w5','M','Clear validation error for an invalid scenario',1],
+['w6','M','Tests including proof that the original is unchanged',1]]],
+['M6 UI and report (Streamlit)',[
+['6.1','M','Multipage skeleton and theme config',1],
+['6.2','M','SOP Input Studio: counter, sample SOP, sentence preview, validation',1],
+['6.3','M','Extraction Inspector: evidence shown for the selected element',1],
+['6.4','M','Workflow Explorer: graph, element selector, findings highlighted',1],
+['6.5','M','Verification Center: grouped findings, counterexample shown only when real',1],
+['6.6','M','Review loop: confirm, dismiss or edit findings with re-verification',0],
+['6.7','M','What-If Lab: original and modified clearly distinguished',1],
+['6.8','M','Audit report download with methodology and limitations',1],
+['6.9','S','Executive dashboard using real saved metrics only',1],
+['6.10','S','Empty, loading and error states on every page',1]]],
+['M7 Database and API',[
+['7.1','M','SQLAlchemy models: processes, sentences, model versions, findings with status, scenarios, benchmark cases',0],
+['7.2','M','Transactions, plus persistence, retrieval and rollback tests',1],
+['7.3','S','Alembic migrations',1],
+['7.4','M','FastAPI routes: health, analyze, list and get, findings, what-if, report',1],
+['7.5','M','Separate request and response models, safe error messages',1]]],
+['M8 Evaluation',[
+['8.1','M','Benchmark of at least 30 SOPs (adapted, academic, authored) with sources disclosed',0],
+['8.2','M','Ground-truth models checked by two team members',0],
+['8.3','M','Fixed dev/test split; test results only with --final',0],
+['8.4','M','Seeded-defect injection script',0],
+['8.5','M','Metrics: state and transition P/R, branch recall, evidence precision, defect P/R per type, hallucination rate, latency',0],
+['8.6','M','Baseline A (direct prompt), baseline B (no M3), ablation run',0],
+['8.7','M','Report per source group; no fabricated scores',0],
+['8.8','M','Tests for metrics with hand-computed examples',1]]],
+['Quality and documentation',[
+['q1','M','GitHub Actions CI running pytest and ruff (no paid LLM calls)',1],
+['q2','S','mypy on core modules',1],
+['q3','M','Logging without SOP content, .env.example, no secrets committed',1],
+['q4','M','README, architecture notes, known limitations',1],
+['q5','M','Five-minute demo script with industrial case studies (SDG 9)',0]]],
+['Deployment',[
+['d1','S','Dockerfiles and docker-compose for local run',1],
+['d2','D','VPS deployment with HTTPS reverse proxy',0],
+['d3','D','Database backup and restore instructions',1],
+['d4','D','Dependency scanning',1],
+['d5','D','Production PostgreSQL configuration',1]]]
+];
+const KEY='rc-checklist-v2',N={M:'Must',S:'Should',D:'Defer'};
+let saved={},flt='all';
+try{saved=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
+const isDone=t=>t[0] in saved?saved[t[0]]:!!t[3];
+const $=id=>document.getElementById(id);
+function put(){try{localStorage.setItem(KEY,JSON.stringify(saved))}catch(e){}}
+function show(t){const d=isDone(t);return flt==='all'||(flt==='open'?!d:t[1]===flt)}
+function render(){
+ const open={};document.querySelectorAll('details').forEach(x=>open[x.dataset.n]=x.open);
+ let tot=0,dn=0,mt=0,md=0,html='';
+ D.forEach(([name,tasks])=>{
+  const c=tasks.filter(isDone).length;tot+=tasks.length;dn+=c;
+  tasks.forEach(t=>{if(t[1]==='M'){mt++;if(isDone(t))md++}});
+  const rows=tasks.filter(show);if(!rows.length)return;
+  const isOpen=name in open?open[name]:c<tasks.length;
+  html+=`<details data-n="${name}"${isOpen?' open':''}><summary><b>${name}</b><span class="mini"><i style="width:${100*c/tasks.length}%"></i></span><span class="cnt">${c}/${tasks.length}</span></summary><ul>`+
+  rows.map(t=>`<li class="${isDone(t)?'d':''}"><label><input type="checkbox" data-id="${t[0]}"${isDone(t)?' checked':''}><span class="t">${t[2]}</span><span class="tag ${t[1]}">${N[t[1]]}</span></label></li>`).join('')+`</ul></details>`;
+ });
+ $('list').innerHTML=html||'<p class="empty">Nothing matches this filter.</p>';
+ $('pb').style.width=(100*dn/tot)+'%';
+ $('s1').textContent=`${dn} of ${tot} tasks done`;
+ $('s2').textContent=`Must: ${md} of ${mt}`;
+}
+$('list').addEventListener('change',e=>{if(e.target.dataset.id){saved[e.target.dataset.id]=e.target.checked;put();render()}});
+function btn(box,label,fn,pressed){const b=document.createElement('button');b.textContent=label;if(pressed!==undefined)b.setAttribute('aria-pressed',pressed);b.onclick=fn;box.appendChild(b);return b}
+const fb=$('filters'),fs=[];
+[['all','All'],['M','Must'],['S','Should'],['D','Defer'],['open','Not done']].forEach(([k,l])=>{
+ const b=btn(fb,l,()=>{flt=k;fs.forEach(x=>x[1].setAttribute('aria-pressed',x[0]===k));render()},k==='all');fs.push([k,b])});
+const sp=document.createElement('span');sp.className='sp';fb.appendChild(sp);
+btn(fb,'Copy progress',()=>{const ids=D.flatMap(m=>m[1]).filter(isDone).map(t=>t[0]).join(', ');
+ navigator.clipboard&&navigator.clipboard.writeText('Done: '+(ids||'none'))});
+btn(fb,'Reset',()=>{if(confirm('Clear all ticks saved in this browser?')){saved={};put();render()}});
+const tb=$('tabs');
+const tabs=[['list','Checklist'],['spec','Merged spec']];const tbs=[];
+tabs.forEach(([id,l],i)=>{const b=btn(tb,l,()=>{tabs.forEach(([x])=>$(x).hidden=x!==id);tbs.forEach((y,j)=>y.setAttribute('aria-pressed',tabs[j][0]===id));fb.hidden=id!=='list'},i===0);tbs.push(b)});
+render();
+</script>
+</body>
+</html>

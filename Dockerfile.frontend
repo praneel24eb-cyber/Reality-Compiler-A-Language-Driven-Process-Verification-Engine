@@ -1,6 +1,8 @@
 FROM python:3.11-slim
 WORKDIR /srv
 COPY . .
-RUN pip install --no-cache-dir . && useradd --uid 10001 app && chown -R app /srv
+RUN pip install --no-cache-dir --require-hashes -r requirements.lock \
+    && pip install --no-cache-dir --no-deps . \
+    && useradd --uid 10001 app && chown -R app /srv
 USER app
 CMD ["streamlit", "run", "ui/streamlit_app.py", "--server.address=0.0.0.0", "--browser.gatherUsageStats=false"]

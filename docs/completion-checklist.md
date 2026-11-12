@@ -8,8 +8,8 @@ until their actual result is observed.
 | --- | --- | --- |
 | Phase 7 — reliability and recovery | Complete locally | DPAPI persistence survived real restart; authenticated model request returned 200; refresh/revocation tests passed; restore retained 16 analyses, 11 scenarios, 1 draft |
 | Phase 8 — finished interface | Complete locally | Forest/neutral workspace; automatic graph and mindmap cards; evidence selection, keyboard movement, fit/zoom, exact chat, retained layout, mobile stacking and removal passed in Chrome; screenshots reviewed |
-| Phase 9 — evaluation | Checkpoint; implementation paused | Nine synthetic cases and runner implemented; both methods returned results on all nine; report saved; reviewed defect scores were worse than baseline, requiring further analysis |
-| Phase 10 — release and operations | Checkpoint; implementation paused | Phasewise Git publication requested; existing CI fails mypy on Linux; dependency locking and container/PostgreSQL execution checks pending; no hosting requested |
+| Phase 9 — evaluation | Requires improvement | Nine synthetic cases and runner implemented; both methods returned results on all nine; report saved; reviewed defect F1 was lower than baseline and evaluation design needs improvement before claiming gains |
+| Phase 10 — release and operations | CI pending | Cross-platform typing fixed locally; Python 3.11 hash locks and PostgreSQL, browser, audit and Windows-session CI added; observe remote CI before calling release checks complete; container builds remain unverified locally |
 
 User approved a finished visual design and supplied the GitHub repository:
 https://github.com/praneel24eb-cyber/Reality-Compiler-A-Language-Driven-Process-Verification-Engine

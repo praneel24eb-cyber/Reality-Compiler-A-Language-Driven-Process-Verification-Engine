@@ -23,6 +23,8 @@ services:
       LLM_PROVIDER: hosted
       LLM_MODEL: ${LLM_MODEL:-}
       LLM_BASE_URL: ${LLM_BASE_URL:-https://api.openai.com/v1}
+      RC_TRUSTED_LOCAL_PROXIES: 172.30.0.10
+      FRONTEND_URL: http://localhost:3000/connection
     depends_on:
       db:
         condition: service_healthy
@@ -55,6 +57,23 @@ services:
       interval: 30s
       retries: 3
     restart: unless-stopped
+  react-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.react-frontend
+    ports: ["127.0.0.1:3000:80"]
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      default:
+      react_proxy:
+        ipv4_address: 172.30.0.10
+    healthcheck:
+      test: [CMD, wget, --spider, -q, "http://localhost:80/"]
+      interval: 30s
+      retries: 3
+    restart: unless-stopped
   proxy:
     image: caddy:2-alpine
     profiles: [public]
@@ -69,3 +88,9 @@ services:
 volumes:
   database:
   caddy:
+
+networks:
+  react_proxy:
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24

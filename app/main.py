@@ -7,6 +7,7 @@ from time import perf_counter
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from pydantic import Field
 from sqlalchemy import select, text
@@ -53,9 +54,25 @@ class ModelSelection(Contract):
 def create_app(client: LLMClient | None = None, engine=None) -> FastAPI:
     """Construct the API with injectable provider and database for tests."""
     api = FastAPI(title="Reality Compiler", version="2.0.0")
+    frontend_origins = {
+        "http://localhost:5173", "http://127.0.0.1:5173",
+        "http://localhost:3000", "http://127.0.0.1:3000",
+        "http://localhost:8501", "http://127.0.0.1:8501",
+    }
+    api.add_middleware(
+        CORSMiddleware,
+        allow_origins=sorted(frontend_origins),
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     db = engine if engine is not None else make_engine()
     connection = ChatGPTConnection()
     local_chatgpt = client is None and os.getenv("LLM_PROVIDER", "chatgpt") == "chatgpt"
+    trusted_proxies = {
+        value.strip() for value in os.getenv("RC_TRUSTED_LOCAL_PROXIES", "").split(",")
+        if value.strip()
+    }
     llm = (
         client
         if client is not None
@@ -66,21 +83,20 @@ def create_app(client: LLMClient | None = None, engine=None) -> FastAPI:
     async def safe_request(request: Request, call_next):
         start = perf_counter()
         if local_chatgpt:
-            if (
-                request.url.hostname not in {"localhost", "127.0.0.1"}
-                or not request.client
-                or request.client.host not in {"127.0.0.1", "::1"}
-            ):
+            if request.url.hostname not in {"localhost", "127.0.0.1"}:
                 return JSONResponse(
                     status_code=403, content={"detail": "ChatGPT mode is local-only"}
                 )
             origin = request.headers.get("origin")
-            if origin and origin not in {
-                "http://127.0.0.1:8000",
-                "http://localhost:8501",
-                "http://127.0.0.1:8501",
-            }:
+            if origin and origin not in frontend_origins | {"http://127.0.0.1:8000", "http://localhost:8000"}:
                 return JSONResponse(status_code=403, content={"detail": "Origin not allowed"})
+            peer = request.client.host if request.client else ""
+            direct_local = peer in {"127.0.0.1", "::1"}
+            trusted_frontend = peer in trusted_proxies and origin in frontend_origins
+            if not direct_local and not trusted_frontend:
+                return JSONResponse(
+                    status_code=403, content={"detail": "ChatGPT mode is local-only"}
+                )
         body = bytearray()
         async for chunk in request.stream():
             body.extend(chunk)
@@ -145,16 +161,13 @@ def create_app(client: LLMClient | None = None, engine=None) -> FastAPI:
             raise HTTPException(409, "Local ChatGPT mode is disabled")
         try:
             connection.finish(request.cookies.get("rc_oauth", ""), dict(request.query_params))
-            message = (
-                "ChatGPT connected. Return to Reality Compiler. An available model will be "
-                "selected automatically; you can change it in ChatGPT Connection."
-            )
+            message = "ChatGPT connected. Return to Reality Compiler to continue."
             status = 200
         except ValueError:
             message = "Sign-in could not be verified or permission was declined. Return to Connection settings and try again."
             status = 400
         response = HTMLResponse(
-            f"<h1>{message}</h1><a href='http://localhost:8501/connection_page'>Return to Reality Compiler</a>",
+            f"<h1>{message}</h1><a href='{os.getenv('FRONTEND_URL', 'http://localhost:8501/connection_page')}'>Return to Reality Compiler</a>",
             status_code=status,
         )
         response.delete_cookie("rc_oauth", path="/auth/callback")

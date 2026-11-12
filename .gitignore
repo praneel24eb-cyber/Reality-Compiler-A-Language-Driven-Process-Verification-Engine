@@ -16,3 +16,4 @@ testing/objectives/*.json
 test-results/
 playwright-report/
 .coverage
+frontend/node_modules/`nfrontend/dist/

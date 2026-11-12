@@ -75,7 +75,7 @@ class ChatGPTClient:
         completed = False
         try:
             with (
-                httpx.Client(timeout=90, follow_redirects=False) as client,
+                httpx.Client(timeout=180, follow_redirects=False) as client,
                 client.stream(
                     "POST",
                     RESOURCE + "/responses",

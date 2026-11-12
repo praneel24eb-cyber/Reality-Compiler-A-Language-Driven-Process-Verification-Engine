@@ -4,6 +4,8 @@ from io import BytesIO
 
 from pypdf import PdfReader
 
+from app.preprocessing import MAX_SOURCE
+
 
 def pdf_pages(content: bytes) -> list[str]:
     """Extract at most 100 text pages from a PDF of at most 10 MB."""
@@ -16,7 +18,7 @@ def pdf_pages(content: bytes) -> list[str]:
         pages = []
         for page in reader.pages:
             text = page.extract_text() or ""
-            if len(text) > 100000:
+            if len(text) > MAX_SOURCE:
                 raise ValueError("PDF page text is too large")
             pages.append(text)
         if not any(p.strip() for p in pages):

@@ -22,6 +22,10 @@ timers, asynchronous events or execution. A contents page is not a procedure: re
 empty states and transitions rather than inventing index/header states. Preserve stated
 rejection, exception and failure routes. Use null for unstated actors, not invented owners.
 State names should be concise action phrases from the source.
+Interpret conversational English, informal phrasing, common slang, abbreviations and
+minor typos conservatively. Preserve the source's actual meaning; do not invent a
+formal step merely to normalize slang. If an informal phrase has multiple plausible
+process meanings, flag the ambiguity for human review.
 Do not add placeholder states or transitions for missing/rejected/undefined routes.
 Absence belongs in review findings, never in a fictional terminal state. A stated
 rejection outcome with no defined next action does not authorize a "rejection complete"
@@ -90,7 +94,7 @@ class HostedClient:
                 {"role": "user", "content": json.dumps(data)},
             ],
         }
-        with httpx.Client(timeout=30, follow_redirects=False) as client:
+        with httpx.Client(timeout=180, follow_redirects=False) as client:
             for attempt in range(3):
                 try:
                     response = client.post(

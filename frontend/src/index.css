@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+  body { @apply bg-surface-100 text-ink; }
+  :focus-visible { @apply outline-2 outline-offset-2 outline-primary-400; }
+  ::selection { @apply bg-primary-100 text-primary-800; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { @apply bg-transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-surface-400 rounded-full; }
+}
+
+@layer components {
+  .rc-card {
+    @apply bg-white rounded-xl border border-surface-300 shadow-card
+           transition-shadow duration-200 hover:shadow-card-hover;
+  }
+  .rc-badge {
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  .rc-btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg
+           text-sm font-semibold transition-all duration-150 cursor-pointer
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .rc-btn-primary {
+    @apply rc-btn bg-primary-500 text-white border border-primary-500
+           hover:bg-primary-600 active:bg-primary-700
+           shadow-sm hover:shadow-glow;
+  }
+  .rc-btn-ghost {
+    @apply rc-btn bg-transparent text-muted border border-surface-300
+           hover:border-primary-400 hover:text-primary-600 hover:bg-primary-50;
+  }
+  .rc-btn-danger {
+    @apply rc-btn bg-red-50 text-red-700 border border-red-200
+           hover:bg-red-100 hover:border-red-300;
+  }
+  .rc-input {
+    @apply w-full px-3.5 py-2.5 rounded-lg border border-surface-300
+           bg-white text-ink text-sm placeholder:text-muted/60
+           focus:border-primary-400 focus:ring-2 focus:ring-primary-100
+           transition-colors duration-150;
+  }
+  .rc-skeleton {
+    @apply bg-gradient-to-r from-surface-200 via-surface-100 to-surface-200
+           bg-[length:200%_100%] animate-shimmer rounded-lg;
+  }
+}
+
+/* ReactFlow overrides */
+.react-flow__node { font-family: Inter, -apple-system, sans-serif !important; }
+.react-flow__minimap { border-radius: 12px !important; border: 1px solid #dfe6df !important; }
+.react-flow__controls { border-radius: 10px !important; border: 1px solid #dfe6df !important; box-shadow: 0 2px 8px rgba(32,51,48,0.08) !important; }
+.react-flow__controls-button { border-bottom-color: #edf1e9 !important; }
+.react-flow__controls-button:hover { background: #edf7f5 !important; }
+.react-flow__background pattern circle { fill: #c6d3c4 !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

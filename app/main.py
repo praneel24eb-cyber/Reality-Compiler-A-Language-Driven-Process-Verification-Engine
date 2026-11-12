@@ -21,6 +21,7 @@ from app.canvas import ChatRequest, ChatResponse, respond
 from app.chatgpt_auth import ChatGPTConnection
 from app.chatgpt_client import ChatGPTClient
 from app.database import SavedAnalysis, SavedDraft, SavedScenario, make_engine
+from app.documents import pdf_pages
 from app.engine import Analysis, Rule, Scenario, graph, simulate
 from app.llm import ExtractionError, HostedClient, LLMClient
 from app.models import Contract
@@ -29,10 +30,10 @@ from app.preprocessing import MAX_SOURCE
 from app.versions import RevisionRequest, revise
 
 LIMITATIONS = (
-    "Structural checks are not compliance certification. Evidence references do not prove "
-    "semantic entailment. AI review is advisory. Sequential and conditional workflows only; "
-    "concurrency and timers are out of scope. "
-    "No authentication or tenant isolation; use synthetic data for demonstrations."
+    "Local single-user tool: keep it on this device; it has no user accounts or tenant isolation. "
+    "Structural checks are advisory, not compliance certification, and evidence links do not "
+    "prove semantic entailment. Only sequential and conditional workflows are supported; "
+    "concurrency and timers are out of scope. Review AI findings against the source."
 )
 
 
@@ -98,9 +99,14 @@ def create_app(client: LLMClient | None = None, engine=None) -> FastAPI:
                     status_code=403, content={"detail": "ChatGPT mode is local-only"}
                 )
         body = bytearray()
+        request_limit = (
+            11_000_000 if request.url.path == "/documents/pdf/text"
+            else 2_000_000 if request.url.path == "/analyses"
+            else 1_000_000
+        )
         async for chunk in request.stream():
             body.extend(chunk)
-            if len(body) > 1000000:
+            if len(body) > request_limit:
                 return JSONResponse(status_code=413, content={"detail": "Request too large"})
         request._body = bytes(body)
         response = await call_next(request)
@@ -163,11 +169,24 @@ def create_app(client: LLMClient | None = None, engine=None) -> FastAPI:
             connection.finish(request.cookies.get("rc_oauth", ""), dict(request.query_params))
             message = "ChatGPT connected. Return to Reality Compiler to continue."
             status = 200
-        except ValueError:
-            message = "Sign-in could not be verified or permission was declined. Return to Connection settings and try again."
+        except ValueError as exc:
+            reason = str(exc)
+            allowed_reasons = {
+                "Sign-in attempt expired or could not be verified. Try again.",
+                "ChatGPT sign-in was not authorized. Try again when ready.",
+                "ChatGPT returned an invalid client registration",
+                "Could not validate ChatGPT sign-in. Check account eligibility and retry.",
+            }
+            detail = reason if reason in allowed_reasons else "The sign-in response could not be validated."
+            message = (
+                f"Sign-in failed: {detail} Return to ChatGPT Connection, start a fresh attempt, "
+                "and approve the requested permissions."
+            )
             status = 400
         response = HTMLResponse(
-            f"<h1>{message}</h1><a href='{os.getenv('FRONTEND_URL', 'http://localhost:8501/connection_page')}'>Return to Reality Compiler</a>",
+            f"<h1>{message}</h1><p>If sign-in failed, start a fresh attempt from ChatGPT Connection. "
+            "The sign-in attempt can expire or be declined by the account workspace.</p>"
+            f"<a href='{os.getenv('FRONTEND_URL', 'http://127.0.0.1:5173/connection')}'>Return to ChatGPT Connection</a>",
             status_code=status,
         )
         response.delete_cookie("rc_oauth", path="/auth/callback")
@@ -199,6 +218,31 @@ def create_app(client: LLMClient | None = None, engine=None) -> FastAPI:
             session.execute(select(SavedAnalysis.id).limit(1))
             session.execute(select(SavedDraft.id).limit(1))
         return {"status": "ok"}
+
+    @api.post("/documents/pdf/text")
+    async def extract_pdf_text(request: Request):
+        """Extract reviewable PDF text before the user asks the model to analyze it."""
+        if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/pdf":
+            raise HTTPException(415, "Upload the PDF file as application/pdf")
+        try:
+            pages = pdf_pages(await request.body())
+            requested_pages = request.query_params.getlist("page")
+            if requested_pages:
+                try:
+                    selected = {int(number) for value in requested_pages for number in value.split(",")}
+                except ValueError:
+                    raise HTTPException(422, "Page numbers must be positive integers") from None
+                if not selected or min(selected) < 1 or max(selected) > len(pages):
+                    raise HTTPException(422, f"Choose page numbers from 1 to {len(pages)}")
+                pages = [page for index, page in enumerate(pages, 1) if index in selected]
+            source = "\n\n".join(page.strip() for page in pages if page.strip())
+            if not source.strip():
+                raise HTTPException(422, "The selected PDF pages contain no readable text")
+            if len(source) > MAX_SOURCE:
+                raise HTTPException(413, "Extracted text exceeds 200,000 characters; use a shorter PDF")
+            return {"source": source, "page_count": len(pages), "characters": len(source)}
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from None
 
     @api.get("/evaluation/cases")
     def evaluation_cases():

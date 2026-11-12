@@ -111,8 +111,8 @@ def studio():
                 )
                 if st.button("Load selected pages", disabled=not selected_pages):
                     text = "\n\n".join(pages[i - 1] for i in sorted(selected_pages))
-                    if len(text) > 30000:
-                        st.error("Select fewer pages: analysis limit is 30,000 characters.")
+                    if len(text) > 200000:
+                        st.error("Select fewer pages: analysis limit is 200,000 characters.")
                     else:
                         st.session_state["source"] = text
                 st.caption(
@@ -123,8 +123,8 @@ def studio():
         elif st.button("Load uploaded text"):
             try:
                 text = upload.getvalue().decode("utf-8-sig")
-                if len(text) > 30000:
-                    st.error("Select a shorter SOP: 30,000 character limit.")
+                if len(text) > 200000:
+                    st.error("Select a shorter SOP: 200,000 character limit.")
                 else:
                     st.session_state["source"] = text
             except UnicodeDecodeError:
@@ -142,7 +142,7 @@ def studio():
         st.session_state["source"] = (
             "The clerk receives a request. The manager reviews it. The clerk archives it."
         )
-    source = st.text_area("Original SOP", key="source", height=250, max_chars=30000)
+    source = st.text_area("Original SOP", key="source", height=250, max_chars=200000)
     st.caption(f"{len(source)} characters")
     if source.strip():
         try:

@@ -5,13 +5,13 @@ import re
 
 from app.models import Sentence
 
-MAX_SOURCE = 30000
+MAX_SOURCE = 200000
 
 
 def sentences(source: str) -> list[Sentence]:
     """Keep wrapped sentences together and retain exact offsets in unmodified source."""
     if not source.strip() or len(source) > MAX_SOURCE or "\x00" in source:
-        raise ValueError("SOP must contain 1–30,000 characters and no NUL characters")
+        raise ValueError("SOP must contain 1–200,000 characters and no NUL characters")
     protected = re.compile(r"\b(?:Mr|Mrs|Ms|Dr|Prof|Sr|Jr|vs|etc|e\.g|i\.e)\.$", re.IGNORECASE)
     boundaries = [0]
     for match in re.finditer(

@@ -70,7 +70,9 @@ consumed by Docker Compose; direct startup uses exported shell variables.
 
 The SOP Input Studio accepts UTF-8 text and text-based PDFs. Select PDF pages and
 review the extracted text before analysis; scanned pages, diagrams and reading
-order may need manual correction. The 30,000-character analysis limit applies.
+order may need manual correction. The 200,000-character analysis limit applies.
+Very large procedures may exceed a connected model's context capacity; use the
+page selector or analyze focused sections.
 Cover and contents pages may produce no workflow transitions. Such analyses remain
 available for review, with visible step/transition counts; the simulation lab offers
 only operations with actual targets. Select the procedure pages and analyze them

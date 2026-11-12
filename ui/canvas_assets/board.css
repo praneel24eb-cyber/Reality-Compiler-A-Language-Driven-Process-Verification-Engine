@@ -1,0 +1,16 @@
+.canvas-root {font:14px system-ui,sans-serif;color:var(--st-text-color,#222)}
+.toolbar {display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+button,textarea {font:inherit;color:inherit;background:var(--st-background-color,#fff);border:1px solid #999;border-radius:5px;padding:7px}
+button {cursor:pointer} button:disabled {opacity:.5;cursor:wait}
+.viewport {height:660px;position:relative;overflow:hidden;border:1px solid #999;touch-action:none;background-color:var(--st-secondary-background-color,#f5f5f5);background-image:radial-gradient(#aaa 1px,transparent 1px);background-size:24px 24px}
+.world {position:absolute;inset:0;transform-origin:0 0}
+.card {position:absolute;background:var(--st-background-color,#fff);border:1px solid #888;border-radius:8px;box-shadow:0 2px 8px #0001;overflow:hidden;width:660px}
+.handle {display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px;border-bottom:1px solid #aaa;cursor:grab;touch-action:none;font-weight:600}
+.handle:focus-visible,button:focus-visible,textarea:focus-visible {outline:3px solid #3878cc}
+.chat {width:330px}.messages {height:300px;overflow:auto;padding:12px;white-space:pre-wrap;user-select:text;touch-action:pan-y}
+.message {margin-bottom:14px;overflow-wrap:anywhere}.message strong {display:block;margin-bottom:4px}
+form {padding:10px;display:grid;gap:8px} textarea {width:100%;box-sizing:border-box;resize:vertical;min-height:80px}
+.status,.note {padding:8px 12px;font-size:12px;white-space:pre-wrap}.error {color:#b33}
+.diagram {height:340px;overflow:auto;touch-action:pan-x pan-y}.diagram svg {display:block}
+.details {white-space:pre-wrap;overflow:auto;max-height:150px;padding:8px 12px;font-size:12px}
+svg text {fill:var(--st-text-color,#222);font:12px system-ui} svg rect {fill:var(--st-background-color,#fff);stroke:#777} svg path {fill:none;stroke:#777;stroke-width:1.5}

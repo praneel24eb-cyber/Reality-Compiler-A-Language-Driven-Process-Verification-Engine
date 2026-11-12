@@ -1,0 +1,26 @@
+[
+  {
+    "id": "sequential", "title": "Complete sequential procedure",
+    "source": "The clerk performs Receive request as the starting step. The clerk then performs Archive request, which ends the process.",
+    "states": ["Receive request", "Archive request"],
+    "transitions": [["Receive request", "Archive request"]],
+    "actors": ["clerk"], "defects": [],
+    "state_evidence": [["Receive request", "S1"], ["Archive request", "S2"]]
+  },
+  {
+    "id": "missing_rejection", "title": "Approval without a rejection route",
+    "source": "The manager performs Review request as the starting step. If approved, the clerk performs Archive request, which ends the process. No next step is defined when the request is rejected.",
+    "states": ["Review request", "Archive request"],
+    "transitions": [["Review request", "Archive request"]],
+    "actors": ["manager", "clerk"], "defects": ["missing_branch"],
+    "state_evidence": [["Review request", "S1"], ["Archive request", "S2"]]
+  },
+  {
+    "id": "dead_end", "title": "Procedure stops before completion",
+    "source": "The clerk performs Receive request as the starting step. The clerk then performs Check request. Check request is not an end state, has no next step, and no completed outcome is defined.",
+    "states": ["Receive request", "Check request"],
+    "transitions": [["Receive request", "Check request"]],
+    "actors": ["clerk"], "defects": ["dead_end", "invariant_violation"],
+    "state_evidence": [["Receive request", "S1"], ["Check request", "S2"]]
+  }
+]

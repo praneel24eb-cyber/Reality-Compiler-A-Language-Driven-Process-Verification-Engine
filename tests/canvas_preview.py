@@ -3,9 +3,12 @@
 import streamlit as st
 
 from ui.canvas import board_component
+from ui.theme import apply_theme
 
 st.set_page_config(layout="wide")
-st.title("Canvas interaction test — synthetic fixtures")
+apply_theme()
+st.title("AI Canvas")
+st.caption("Browser acceptance fixture · Synthetic procedure · No account or saved data used")
 board = st.session_state.setdefault(
     "fixture",
     {
@@ -20,7 +23,10 @@ board = st.session_state.setdefault(
                 "kind": "workflow",
                 "title": "Review flow",
                 "note": "Synthetic test workflow",
-                "nodes": [{"id": "start", "label": "Receive"}, {"id": "review", "label": "Review"}],
+                "nodes": [
+                    {"id": "start", "label": "Receive", "details": {"kind": "start", "actor": "Clerk", "source_passages": ["The clerk receives the request."]}},
+                    {"id": "review", "label": "Review", "details": {"kind": "normal", "actor": "Manager"}},
+                ],
                 "edges": [
                     {"id": "a", "source": "start", "target": "review", "label": "submit"},
                     {"id": "b", "source": "start", "target": "review", "label": "resubmit"},
@@ -61,6 +67,8 @@ result = board_component(
 if result.remove:
     board["visuals"] = [v for v in board["visuals"] if v["id"] != result.remove]
     st.rerun()
-if result.submit:
+if result.submit and result.submit["id"] != board.get("last_event"):
+    board["last_event"] = result.submit["id"]
     board["messages"].append({"role": "user", "content": result.submit["message"]})
+    board["messages"].append({"role": "assistant", "content": "The clerk receives the request, then the manager reviews it."})
     st.rerun()

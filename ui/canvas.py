@@ -15,8 +15,8 @@ ASSETS = Path(__file__).parent / "canvas_assets"
 board_component = component(
     "reality_canvas",
     html='<div class="canvas-root"></div>',
-    css=(ASSETS / "board.css").read_text(encoding="utf-8"),
-    js=(ASSETS / "board.js").read_text(encoding="utf-8"),
+    css=(ASSETS / "workspace.css").read_text(encoding="utf-8"),
+    js=(ASSETS / "workspace.js").read_text(encoding="utf-8"),
 )
 
 
@@ -34,8 +34,8 @@ def canvas_page() -> None:
     except (httpx.HTTPError, ValueError) as exc:
         st.error(request_error(exc))
         return
-    st.page_link("http://localhost:8501/connection_page", label="ChatGPT connection and model settings")
-    st.page_link("http://localhost:8501/builder_page", label="Create a workflow from a goal with guided Q&A")
+    st.markdown("[ChatGPT connection and model settings](/connection_page) · "
+                "[Create a workflow with guided Q&A](/builder_page)")
     labels = {a["id"]: analysis_label(a) for a in analyses}
     selected = st.selectbox(
         "Workflow context",
@@ -131,9 +131,8 @@ def canvas_page() -> None:
             board["visuals"].extend(reply["visuals"])
             if reply["visuals"]:
                 index = len(board["visuals"]) - len(reply["visuals"])
-                x = 380 + (index % 2) * 700
-                y = 16 + (index // 2) * 590
-                board["layout"]["view"] = {"x": 20 - x * 0.8, "y": 20 - y * 0.8, "scale": 0.8}
+                # Keep chat and the new workflow side by side at a readable size.
+                board["layout"]["view"] = {"x": 0, "y": -index * 680, "scale": 1}
         except (httpx.HTTPError, ValueError) as exc:
             board["messages"][-1]["failed"] = True
             board["failed_message"] = message

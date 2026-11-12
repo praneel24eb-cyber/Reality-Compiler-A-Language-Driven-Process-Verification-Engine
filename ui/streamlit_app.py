@@ -1,4 +1,4 @@
-"""Functional default-style UI. Visual design is deliberately left to the owner."""
+"""Evidence-focused workspace for building, inspecting and verifying processes."""
 
 import json
 import os
@@ -23,6 +23,7 @@ from ui.display import (
 )
 from ui.editor import workflow_editor
 from ui.evaluation import evaluation_page
+from ui.theme import apply_theme
 
 BASE = os.getenv("API_URL", "http://127.0.0.1:8000")
 
@@ -378,20 +379,21 @@ def reports():
     )
 
 
-st.set_page_config(page_title="Reality Compiler", layout="wide")
-input_page = st.Page(studio, title="SOP Input Studio")
+st.set_page_config(page_title="Reality Compiler", page_icon="◈", layout="wide")
+apply_theme()
+input_page = st.Page(studio, title="SOP Input Studio", icon=":material/upload_file:")
 st.navigation(
     [
-        st.Page(canvas_page, title="AI Canvas"),
-        st.Page(builder_page, title="Workflow Builder"),
-        st.Page(connection_page, title="ChatGPT Connection"),
-        st.Page(dashboard, title="Executive Dashboard"),
+        st.Page(canvas_page, title="AI Canvas", icon=":material/dashboard_customize:"),
+        st.Page(builder_page, title="Workflow Builder", icon=":material/add_circle:"),
+        st.Page(connection_page, title="ChatGPT Connection", icon=":material/link:"),
+        st.Page(dashboard, title="Executive Dashboard", icon=":material/space_dashboard:"),
         input_page,
-        st.Page(inspector, title="Extraction Inspector"),
-        st.Page(explorer, title="Workflow Explorer"),
-        st.Page(verification, title="Verification Center"),
-        st.Page(lab, title="What-If Simulation Lab"),
-        st.Page(reports, title="Audit Report Center"),
-        st.Page(evaluation_page, title="Evaluation & Benchmarking"),
+        st.Page(inspector, title="Extraction Inspector", icon=":material/find_in_page:"),
+        st.Page(explorer, title="Workflow Explorer", icon=":material/account_tree:"),
+        st.Page(verification, title="Verification Center", icon=":material/verified_user:"),
+        st.Page(lab, title="What-If Simulation Lab", icon=":material/science:"),
+        st.Page(reports, title="Audit Report Center", icon=":material/description:"),
+        st.Page(evaluation_page, title="Evaluation & Benchmarking", icon=":material/query_stats:"),
     ]
 ).run()

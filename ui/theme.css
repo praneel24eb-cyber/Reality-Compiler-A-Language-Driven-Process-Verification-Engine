@@ -1,0 +1,42 @@
+:root {--rc-ink:#203330;--rc-accent:#157d70;--rc-line:#dfe6df;--rc-muted:#677973}
+.stApp {background:#f6f7f3;color:var(--rc-ink)}
+[data-testid="stHeader"] {background:rgba(246,247,243,.94)}
+[data-testid="stMainBlockContainer"] {padding-top:4rem;padding-bottom:3rem;max-width:1600px}
+h1 {font-size:2.45rem!important;letter-spacing:-.055em!important;font-weight:650!important;margin:0!important;padding-top:.5rem!important}
+h2 {font-size:1.45rem!important;letter-spacing:-.025em!important}
+h3 {font-size:1.1rem!important;letter-spacing:-.015em!important}
+[data-testid="stCaptionContainer"] {color:var(--rc-muted);line-height:1.65}
+.rc-topbar {display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 0 22px;border-bottom:1px solid var(--rc-line);margin-bottom:24px;font-size:10px;letter-spacing:.14em;font-weight:650;color:#6d7c76}
+.rc-slash {margin:0 12px;color:#b4c1b8}
+.rc-badge {border:1px solid #d6e4da;background:#edf5ed;border-radius:30px;padding:6px 12px;color:#436954;letter-spacing:.02em;font-size:11px}
+[data-testid="stSidebar"] {background:#142e2b;border-right:1px solid #25403a}
+[data-testid="stSidebar"] [data-testid="stSidebarContent"] {padding-top:12px}
+[data-testid="stSidebar"] [data-testid="stCaptionContainer"] {color:#afc5ba;font-size:12px;padding:0 5px 14px}
+[data-testid="stSidebarNav"] {padding-top:6px}
+[data-testid="stSidebarNav"] a {color:#c7d8cf!important;border-radius:9px;margin:3px 10px;min-height:39px;font-size:13px}
+[data-testid="stSidebarNav"] a:hover {background:#24473f}
+[data-testid="stSidebarNav"] a[aria-current="page"] {background:#31584d;color:#fff!important;box-shadow:inset 3px 0 #a9d9a5}
+[data-testid="stSidebar"] button {color:#d9e9df}
+.rc-brand {display:flex;gap:12px;align-items:center;color:#e6f2e7;font-size:23px;line-height:1.05;letter-spacing:-.7px;padding:4px 4px 20px}
+.rc-mark {font-size:42px;font-weight:300;color:#bada9e}
+.rc-sidebar-kicker {color:#91ae9f;font-size:9px;letter-spacing:2px;font-weight:700;padding:6px 4px 14px}
+[data-testid="stMetric"] {background:#fff;border:1px solid var(--rc-line);border-radius:14px;padding:18px 22px;box-shadow:0 2px 2px #20333003}
+[data-testid="stMetricLabel"] {color:#698077;font-size:12px}
+[data-testid="stMetricValue"] {font-size:2.1rem;letter-spacing:-.06em}
+[data-testid="stForm"], [data-testid="stExpander"] {background:#fff;border:1px solid var(--rc-line);border-radius:12px}
+[data-testid="stExpander"] details summary {font-size:13px;font-weight:550}
+[data-testid="stTextArea"] textarea {background:#fff;border-radius:10px;line-height:1.6}
+[data-testid="stSelectbox"] [data-baseweb="select"] > div, [data-testid="stTextInput"] [data-baseweb="input"] {background:#fff;border-color:#dce4db;border-radius:9px}
+[data-testid="stButton"] button, [data-testid="stFormSubmitButton"] button, [data-testid="stDownloadButton"] button {border-radius:9px;font-size:13px;min-height:39px;border-color:#d3dfd5;box-shadow:0 1px 1px #173d2810}
+[data-testid="stButton"] button:hover {border-color:#157d70;color:#157d70;background:#eff7f1}
+[data-testid="stDataFrame"] {border-radius:12px;border:1px solid var(--rc-line);overflow:hidden}
+[data-testid="stAlert"] {border-radius:10px;font-size:13px}
+[data-testid="stPageLink"] a {font-size:12px;font-weight:550}
+button:focus-visible,a:focus-visible {outline:3px solid #5ca58f!important;outline-offset:3px}
+@media(max-width:700px) {
+ [data-testid="stMainBlockContainer"] {padding-left:1rem;padding-right:1rem}
+ h1 {font-size:1.95rem!important}
+ .rc-topbar {margin-bottom:14px;font-size:9px}
+ .rc-badge {display:none}
+}
+@media(prefers-reduced-motion:reduce) {* {scroll-behavior:auto!important;transition:none!important}}

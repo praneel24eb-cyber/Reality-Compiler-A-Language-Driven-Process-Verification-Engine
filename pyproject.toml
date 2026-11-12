@@ -9,11 +9,12 @@ requires-python = ">=3.11"
 dependencies = ["fastapi>=0.115,<1", "uvicorn>=0.30,<1", "pydantic>=2.10,<3", "networkx>=3.4,<4", "sqlalchemy>=2.0,<3", "alembic>=1.14,<2", "httpx>=0.28,<1", "streamlit>=1.51,<2", "graphviz>=0.20,<1", "psycopg[binary]>=3.2,<4", "PyJWT[crypto]>=2.10,<3", "pypdf>=6,<7"]
 
 [tool.setuptools.package-data]
-ui = ["canvas_assets/*.js", "canvas_assets/*.css"]
+ui = ["canvas_assets/*.js", "canvas_assets/*.css", "theme.css"]
 app = ["benchmark_cases.json"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8,<10", "ruff>=0.9", "mypy>=1.14", "types-networkx", "pip-audit"]
+browser = ["playwright>=1.50,<2"]
 
 [tool.setuptools.packages.find]
 include = ["app*", "ui*"]

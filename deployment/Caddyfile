@@ -1,0 +1,6 @@
+{$DOMAIN} {
+    request_body {
+        max_size 150KB
+    }
+    reverse_proxy frontend:8501
+}

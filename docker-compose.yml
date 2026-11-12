@@ -1,0 +1,71 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: reality
+      POSTGRES_USER: reality
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes:
+      - database:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U reality"]
+      interval: 5s
+      retries: 10
+    restart: unless-stopped
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    command: [alembic, upgrade, head]
+    environment: &backend_env
+      DATABASE_URL: postgresql+psycopg://reality:${POSTGRES_PASSWORD}@db/reality
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_PROVIDER: hosted
+      LLM_MODEL: ${LLM_MODEL:-}
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://api.openai.com/v1}
+    depends_on:
+      db:
+        condition: service_healthy
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    environment: *backend_env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    ports: ["127.0.0.1:8000:8000"]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      retries: 3
+    restart: unless-stopped
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    environment:
+      API_URL: http://backend:8000
+    ports: ["127.0.0.1:8501:8501"]
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health')"]
+      interval: 30s
+      retries: 3
+    restart: unless-stopped
+  proxy:
+    image: caddy:2-alpine
+    profiles: [public]
+    environment:
+      DOMAIN: ${DOMAIN:?Set DOMAIN}
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./deployment/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy:/data
+    depends_on: [frontend]
+    restart: unless-stopped
+volumes:
+  database:
+  caddy:
